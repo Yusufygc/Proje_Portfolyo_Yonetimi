@@ -1,0 +1,66 @@
+/* button.qss */
+
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #5AADFF, stop:1 #4A9EFF);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 36px;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #6ABDFF, stop:1 #5AADFF);
+}
+
+QPushButton:pressed {
+    background: #2D7DD2;
+}
+
+QPushButton:disabled {
+    background: #243447;
+    color: #4A5C6E;
+}
+
+QPushButton[flat="true"],
+QPushButton#btn_flat {
+    background: transparent;
+    border: 1px solid #4A9EFF;
+    color: #4A9EFF;
+}
+
+QPushButton[flat="true"]:hover,
+QPushButton#btn_flat:hover {
+    background: rgba(74, 158, 255, 0.1);
+}
+
+QPushButton#btn_danger {
+    background: #EF4444;
+    color: white;
+}
+
+QPushButton#btn_danger:hover {
+    background: #DC2626;
+}
+
+QPushButton#btn_success {
+    background: #4CAF7D;
+    color: white;
+}
+
+QPushButton#btn_icon {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+QPushButton#btn_icon:hover {
+    background: rgba(74, 158, 255, 0.15);
+}

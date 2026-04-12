@@ -1,0 +1,154 @@
+/* silver_blue.qss — Ana tema */
+
+QWidget {
+    background-color: #0F1923;
+    color: #E8EDF2;
+    font-family: "Segoe UI";
+    font-size: 14px;
+}
+
+QMainWindow {
+    background-color: #0F1923;
+}
+
+QScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QScrollBar:vertical {
+    background: #162030;
+    width: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: #4A9EFF;
+    border-radius: 3px;
+    min-height: 40px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #162030;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #4A9EFF;
+    border-radius: 3px;
+}
+
+QLabel {
+    background: transparent;
+    color: #E8EDF2;
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #1A2535;
+    border: 1px solid #243447;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #E8EDF2;
+    font-size: 14px;
+    selection-background-color: #4A9EFF;
+}
+
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+    border-color: #4A9EFF;
+}
+
+QComboBox {
+    background-color: #1A2535;
+    border: 1px solid #243447;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #E8EDF2;
+    font-size: 14px;
+}
+
+QComboBox:focus {
+    border-color: #4A9EFF;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #1C2A3A;
+    border: 1px solid #243447;
+    selection-background-color: #4A9EFF;
+    color: #E8EDF2;
+    outline: none;
+}
+
+QCheckBox {
+    color: #E8EDF2;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #243447;
+    border-radius: 4px;
+    background: #1A2535;
+}
+
+QCheckBox::indicator:checked {
+    background: #4A9EFF;
+    border-color: #4A9EFF;
+}
+
+QSplitter::handle {
+    background: #243447;
+}
+
+QFrame[frameShape="4"],
+QFrame[frameShape="5"] {
+    color: #243447;
+}
+
+QToolTip {
+    background: #1C2A3A;
+    border: 1px solid #4A9EFF;
+    color: #E8EDF2;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+QMessageBox {
+    background: #162030;
+}
+
+QDialog {
+    background: #162030;
+}
+
+QTableWidget {
+    background: #1C2A3A;
+    border: 1px solid #243447;
+    border-radius: 8px;
+    gridline-color: #243447;
+    color: #E8EDF2;
+}
+
+QTableWidget::item:selected {
+    background: #4A9EFF;
+}
+
+QHeaderView::section {
+    background: #0F1923;
+    color: #8CA0B3;
+    border: none;
+    border-bottom: 1px solid #243447;
+    padding: 8px;
+    font-size: 12px;
+}

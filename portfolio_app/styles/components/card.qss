@@ -1,0 +1,46 @@
+/* card.qss */
+
+QFrame#card {
+    background: #1C2A3A;
+    border: 1px solid #243447;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+QFrame#card:hover {
+    border-color: #4A9EFF;
+}
+
+QFrame#glass_card {
+    background: rgba(28, 42, 58, 0.7);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+QLabel#card_title {
+    color: #E8EDF2;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+QLabel#card_subtitle {
+    color: #8CA0B3;
+    font-size: 12px;
+}
+
+QLabel#tag {
+    background: #1E3348;
+    border: 1px solid #2D5070;
+    border-radius: 12px;
+    color: #7EB8FF;
+    font-size: 11px;
+    padding: 2px 10px;
+}
+
+QLabel#status_badge {
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+}

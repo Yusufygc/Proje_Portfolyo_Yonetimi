@@ -1,0 +1,40 @@
+/* navbar.qss */
+
+QWidget#navbar {
+    background: rgba(15, 25, 35, 0.95);
+    border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+    min-height: 64px;
+    max-height: 64px;
+}
+
+QPushButton#nav_btn {
+    background: transparent;
+    border: none;
+    color: #8CA0B3;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+QPushButton#nav_btn:hover {
+    color: #4A9EFF;
+    background: rgba(74, 158, 255, 0.08);
+}
+
+QPushButton#nav_btn[active="true"] {
+    color: #4A9EFF;
+}
+
+QLabel#nav_brand {
+    color: #4A9EFF;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+QLabel#nav_title {
+    color: #E8EDF2;
+    font-size: 16px;
+    font-weight: 600;
+}

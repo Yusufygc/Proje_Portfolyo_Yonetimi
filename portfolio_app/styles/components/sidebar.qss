@@ -1,0 +1,57 @@
+/* sidebar.qss */
+
+QWidget#sidebar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #0D1620, stop:1 #0F1923);
+    border-right: 1px solid #243447;
+}
+
+QPushButton#sidebar_btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #8CA0B3;
+    font-size: 14px;
+    text-align: left;
+    padding: 10px 12px;
+    min-height: 40px;
+}
+
+QPushButton#sidebar_btn:hover {
+    background: rgba(74, 158, 255, 0.1);
+    color: #E8EDF2;
+}
+
+QPushButton#sidebar_btn[active="true"] {
+    background: rgba(74, 158, 255, 0.15);
+    color: #4A9EFF;
+    border-left: 3px solid #4A9EFF;
+}
+
+QPushButton#sidebar_toggle {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+QPushButton#sidebar_toggle:hover {
+    background: rgba(74, 158, 255, 0.1);
+}
+
+QLabel#sidebar_logo {
+    color: #4A9EFF;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 12px;
+}
+
+QLabel#sidebar_section {
+    color: #4A5C6E;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+}
