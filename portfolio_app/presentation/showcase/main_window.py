@@ -1,7 +1,7 @@
-"""presentation/showcase/main_window.py — Tek sayfa kaydırmalı vitrin penceresi."""
+"""presentation/showcase/main_window.py — Ana pencere: vitrin + admin stack."""
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QScrollArea
+    QMainWindow, QWidget, QVBoxLayout, QScrollArea, QStackedWidget
 )
 from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QTimer
 
@@ -11,23 +11,27 @@ from presentation.showcase.sections.about_section import AboutSection
 from presentation.showcase.sections.projects_section import ProjectsSection
 from presentation.showcase.sections.vision_section import VisionSection
 from presentation.showcase.sections.certificates_section import CertificatesSection
+from presentation.admin.admin_window import AdminPanel
 from styles.constants import COLORS
 from config import WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, APP_NAME
+from di_container import DIContainer
+
+# Stack indeksleri
+_IDX_SHOWCASE = 0
+_IDX_ADMIN    = 1
 
 
 class ShowcaseWindow(QMainWindow):
     """
-    Vitrin ana penceresi.
-    - Sabit navbar üstte
-    - Tek scroll area altında 4 bölüm
-    - Gizli admin trigger: başlık çubuğuna 5 kez çift tıklama
+    Ana uygulama penceresi.
+    QStackedWidget ile vitrin (0) ve admin panel (1) arasında geçiş yapar.
+    Ayrı bir admin penceresi açılmaz.
     """
 
-    admin_requested = None  # main.py tarafından atanır
-
-    def __init__(self, controller: ShowcaseController):
+    def __init__(self, container: DIContainer):
         super().__init__()
-        self._controller = controller
+        self._controller = container.showcase_controller
+        self._container  = container
         self._click_count = 0
         self._click_timer = QTimer()
         self._click_timer.setSingleShot(True)
@@ -39,11 +43,25 @@ class ShowcaseWindow(QMainWindow):
         self._build_ui()
         self._load_data()
 
-    def _build_ui(self) -> None:
-        central = QWidget()
-        self.setCentralWidget(central)
+    # ── UI ──────────────────────────────────────────────────────────────────
 
-        root = QVBoxLayout(central)
+    def _build_ui(self) -> None:
+        self._root_stack = QStackedWidget()
+        self.setCentralWidget(self._root_stack)
+
+        # Sayfa 0: vitrin
+        self._root_stack.addWidget(self._build_showcase_page())
+
+        # Sayfa 1: admin panel (lazy-build, tek seferlik)
+        self._admin_panel = AdminPanel(self._container, parent=self)
+        self._admin_panel.back_requested.connect(self.switch_to_showcase)
+        self._root_stack.addWidget(self._admin_panel)
+
+        self.setStyleSheet("QMainWindow { background: #0D1117; }")
+
+    def _build_showcase_page(self) -> QWidget:
+        page = QWidget()
+        root = QVBoxLayout(page)
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
@@ -62,15 +80,15 @@ class ShowcaseWindow(QMainWindow):
 
         # Scroll içeriği
         self._content = QWidget()
-        self._content.setStyleSheet(f"background: {COLORS['bg_primary']};")
+        self._content.setStyleSheet("background: #0D1117;")
         content_layout = QVBoxLayout(self._content)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(0)
 
-        self._about_section   = AboutSection()
+        self._about_section    = AboutSection()
         self._projects_section = ProjectsSection()
-        self._vision_section  = VisionSection()
-        self._certs_section   = CertificatesSection()
+        self._vision_section   = VisionSection()
+        self._certs_section    = CertificatesSection()
 
         content_layout.addWidget(self._about_section)
         content_layout.addWidget(self._projects_section)
@@ -79,7 +97,6 @@ class ShowcaseWindow(QMainWindow):
 
         self._scroll.setWidget(self._content)
 
-        # Bölüm referansları
         self._sections = {
             "about":        self._about_section,
             "projects":     self._projects_section,
@@ -87,7 +104,21 @@ class ShowcaseWindow(QMainWindow):
             "certificates": self._certs_section,
         }
 
-        self.setStyleSheet(f"QMainWindow {{ background: {COLORS['bg_primary']}; }}")
+        return page
+
+    # ── Geçiş ───────────────────────────────────────────────────────────────
+
+    def switch_to_admin(self) -> None:
+        """Vitrin → Admin."""
+        self._admin_panel.activate()
+        self._root_stack.setCurrentIndex(_IDX_ADMIN)
+
+    def switch_to_showcase(self) -> None:
+        """Admin → Vitrin (veriyi yenile)."""
+        self._root_stack.setCurrentIndex(_IDX_SHOWCASE)
+        self._load_data()
+
+    # ── Veri ────────────────────────────────────────────────────────────────
 
     def _load_data(self) -> None:
         info     = self._controller.get_personal_info()
@@ -99,12 +130,17 @@ class ShowcaseWindow(QMainWindow):
         self._vision_section.load_data(info)
         self._certs_section.load_data(certs)
 
+    def reload(self) -> None:
+        """Dışarıdan çağrılabilir yenileme."""
+        self._load_data()
+
+    # ── Scroll ──────────────────────────────────────────────────────────────
+
     def _scroll_to_section(self, section_id: str) -> None:
         section = self._sections.get(section_id)
         if not section:
             return
-        # Smooth scroll
-        target_y = section.mapTo(self._content, section.rect().topLeft()).y()
+        target_y  = section.mapTo(self._content, section.rect().topLeft()).y()
         current_y = self._scroll.verticalScrollBar().value()
 
         self._anim = QPropertyAnimation(self._scroll.verticalScrollBar(), b"value", self)
@@ -114,20 +150,15 @@ class ShowcaseWindow(QMainWindow):
         self._anim.setEasingCurve(QEasingCurve.OutCubic)
         self._anim.start()
 
-    def reload(self) -> None:
-        """Admin değişiklikleri sonrası veriyi yeniden yükler."""
-        self._load_data()
-
     # ── Gizli admin trigger — başlık çubuğuna 5 kez çift tıklama ───────────
 
     def mouseDoubleClickEvent(self, event) -> None:
         self._click_count += 1
-        self._click_timer.start(2000)  # 2 saniye içinde 5 çift tıklama
+        self._click_timer.start(2000)
         if self._click_count >= 5:
             self._click_count = 0
             self._click_timer.stop()
-            if callable(self.admin_requested):
-                self.admin_requested()
+            self.switch_to_admin()
         super().mouseDoubleClickEvent(event)
 
     def _reset_click_count(self) -> None:
