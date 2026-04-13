@@ -53,6 +53,7 @@ class ProjectsPage(QWidget):
             f"color: {COLORS['text_primary']};"
             f"font-size: {FONTS['size_lg']}px;"
             f"font-weight: 700;"
+            f"background: transparent; border: none;"
         )
         h_lay.addWidget(title)
         h_lay.addStretch()
@@ -181,6 +182,7 @@ class ProjectsPage(QWidget):
         task_lbl = QLabel("Görevler / Fikirler / Tasarımlar")
         task_lbl.setStyleSheet(
             f"color: {COLORS['text_primary']}; font-size: 15px; font-weight: 600;"
+            f"background: transparent; border: none;"
         )
         task_hdr.addWidget(task_lbl)
         task_hdr.addStretch()
@@ -236,6 +238,7 @@ class ProjectsPage(QWidget):
             f"color: {COLORS['text_primary']};"
             f"font-size: {FONTS['size_lg']}px;"
             f"font-weight: 700;"
+            f"background: transparent; border: none;"
         )
         title_row.addWidget(title_lbl)
         title_row.addStretch()
@@ -256,19 +259,28 @@ class ProjectsPage(QWidget):
 
         # Durum
         status_lbl = QLabel(f"Durum: {project.status.label()}")
-        status_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 13px;")
+        status_lbl.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 13px;"
+            f"background: transparent; border: none;"
+        )
         col.addWidget(status_lbl)
 
         if project.short_description:
             desc_lbl = QLabel(project.short_description)
             desc_lbl.setWordWrap(True)
-            desc_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 13px;")
+            desc_lbl.setStyleSheet(
+                f"color: {COLORS['text_secondary']}; font-size: 13px;"
+                f"background: transparent; border: none;"
+            )
             col.addWidget(desc_lbl)
 
         if project.tags:
             tags_str = "  ".join(f"#{t.tag_name}" for t in project.tags)
             tags_lbl = QLabel(tags_str)
-            tags_lbl.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 12px;")
+            tags_lbl.setStyleSheet(
+                f"color: {COLORS['accent_blue']}; font-size: 12px;"
+                f"background: transparent; border: none;"
+            )
             col.addWidget(tags_lbl)
 
         return frame
@@ -291,16 +303,23 @@ class ProjectsPage(QWidget):
         type_lbl.setFixedWidth(70)
         type_lbl.setStyleSheet(
             f"color: {self._task_color(task.type)}; font-size: 11px; font-weight: 600;"
+            f"background: transparent; border: none;"
         )
         row.addWidget(type_lbl)
 
         title_lbl = QLabel(task.title)
-        title_lbl.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 13px;")
+        title_lbl.setStyleSheet(
+            f"color: {COLORS['text_primary']}; font-size: 13px;"
+            f"background: transparent; border: none;"
+        )
         title_lbl.setWordWrap(True)
         row.addWidget(title_lbl, stretch=1)
 
         status_lbl = QLabel(task.status.label())
-        status_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 11px;")
+        status_lbl.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 11px;"
+            f"background: transparent; border: none;"
+        )
         row.addWidget(status_lbl)
 
         del_btn = QPushButton("✕")
@@ -377,7 +396,7 @@ class ProjectDialog(QDialog):
 
         self.setStyleSheet(f"""
             QDialog {{ background: {COLORS['bg_secondary']}; border-radius: 12px; }}
-            QLabel {{ color: {COLORS['text_secondary']}; font-size: 13px; }}
+            QLabel {{ color: {COLORS['text_secondary']}; font-size: 13px; background: transparent; border: none; }}
         """)
 
         form = QFormLayout()

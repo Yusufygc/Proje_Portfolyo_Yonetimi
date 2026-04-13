@@ -49,12 +49,12 @@ class PersonalInfoPage(QWidget):
         # Avatar
         avatar_row = QHBoxLayout()
         self._avatar_lbl = QLabel("YG")
-        self._avatar_lbl.setFixedSize(100, 100)
+        self._avatar_lbl.setFixedSize(100, 130)
         self._avatar_lbl.setAlignment(Qt.AlignCenter)
         self._avatar_lbl.setStyleSheet(f"""
             background: {COLORS['bg_card']};
             border: 2px solid {COLORS['accent_blue']};
-            border-radius: 50px;
+            border-radius: 8px;
             color: {COLORS['text_primary']};
             font-size: 28px;
             font-weight: 700;
@@ -125,8 +125,7 @@ class PersonalInfoPage(QWidget):
         if info.avatar_path:
             full = os.path.join(get_data_path(), info.avatar_path)
             if os.path.exists(full):
-                pix = QPixmap(full).scaled(100, 100, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-                self._avatar_lbl.setPixmap(pix)
+                self._avatar_lbl.setPixmap(_fit_pixmap(QPixmap(full), 100, 130))
                 self._avatar_lbl.setText("")
 
     def _pick_avatar(self) -> None:
@@ -135,8 +134,7 @@ class PersonalInfoPage(QWidget):
         )
         if path:
             self._avatar_source_path = path
-            pix = QPixmap(path).scaled(100, 100, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-            self._avatar_lbl.setPixmap(pix)
+            self._avatar_lbl.setPixmap(_fit_pixmap(QPixmap(path), 100, 130))
             self._avatar_lbl.setText("")
 
     def _save(self) -> None:
@@ -157,3 +155,11 @@ class PersonalInfoPage(QWidget):
         if result:
             show_toast(self, "Kişisel bilgiler kaydedildi.", Toast.SUCCESS)
             self._avatar_source_path = None
+
+
+def _fit_pixmap(source: QPixmap, w: int, h: int) -> QPixmap:
+    """Pixmap'i çerçeveye tam dolduracak şekilde ölçekler ve ortadan kırpar."""
+    scaled = source.scaled(w, h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+    x = (scaled.width() - w) // 2
+    y = (scaled.height() - h) // 2
+    return scaled.copy(x, y, w, h)

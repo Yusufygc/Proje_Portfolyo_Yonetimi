@@ -67,6 +67,7 @@ class ResourcesPage(QWidget):
             f"color: {COLORS['text_primary']};"
             f"font-size: {FONTS['size_lg']}px;"
             f"font-weight: 700;"
+            f"background: transparent; border: none;"
         )
         h_lay.addWidget(title_lbl)
         h_lay.addStretch()
@@ -117,6 +118,7 @@ class ResourcesPage(QWidget):
         self._stats_lbl = QLabel("")
         self._stats_lbl.setStyleSheet(
             f"color: {COLORS['text_muted']}; font-size: 12px;"
+            f"background: transparent; border: none;"
         )
         f_lay.addWidget(self._stats_lbl)
 
@@ -180,13 +182,14 @@ class ResourcesPage(QWidget):
 
             icon = QLabel("🔍")
             icon.setAlignment(Qt.AlignCenter)
-            icon.setStyleSheet("font-size: 40px; background: transparent;")
+            icon.setStyleSheet("font-size: 40px; background: transparent; border: none;")
             empty_lay.addWidget(icon)
 
             msg = QLabel("Bu filtrede kayıt yok.")
             msg.setAlignment(Qt.AlignCenter)
             msg.setStyleSheet(
-                f"color: {COLORS['text_muted']}; font-size: 14px; background: transparent;"
+                f"color: {COLORS['text_muted']}; font-size: 14px;"
+                f"background: transparent; border: none;"
             )
             empty_lay.addWidget(msg)
             self._grid_layout.addWidget(empty_w, 0, 0, 1, GRID_COLS)
@@ -263,6 +266,7 @@ class ResourcesPage(QWidget):
         status_pill = QLabel(f"● {status_text}")
         status_pill.setStyleSheet(
             f"color: {status_color}; font-size: 11px; font-weight: 500;"
+            f"background: transparent; border: none;"
         )
         badge_row.addWidget(status_pill)
         body_lay.addLayout(badge_row)
@@ -273,6 +277,7 @@ class ResourcesPage(QWidget):
             f"color: {COLORS['text_primary']};"
             f"font-size: 15px;"
             f"font-weight: 700;"
+            f"background: transparent; border: none;"
         )
         title_lbl.setWordWrap(True)
         body_lay.addWidget(title_lbl)
@@ -285,6 +290,7 @@ class ResourcesPage(QWidget):
             notes_lbl = QLabel(preview)
             notes_lbl.setStyleSheet(
                 f"color: {COLORS['text_secondary']}; font-size: 12px;"
+                f"background: transparent; border: none;"
             )
             notes_lbl.setWordWrap(True)
             body_lay.addWidget(notes_lbl)
@@ -482,7 +488,7 @@ class ResourceDialog(QDialog):
 
         self.setStyleSheet(f"""
             QDialog {{ background: {COLORS['bg_secondary']}; }}
-            QLabel {{ color: {COLORS['text_secondary']}; font-size: 13px; }}
+            QLabel {{ color: {COLORS['text_secondary']}; font-size: 13px; background: transparent; border: none; }}
             QLineEdit, QTextEdit, QComboBox {{
                 background: {COLORS['bg_input']};
                 color: {COLORS['text_primary']};
@@ -500,6 +506,7 @@ class ResourceDialog(QDialog):
         dlg_title = QLabel("Kaynak Ekle" if not self._resource else "Kaynağı Düzenle")
         dlg_title.setStyleSheet(
             f"color: {COLORS['text_primary']}; font-size: 17px; font-weight: 700;"
+            f"background: transparent; border: none;"
         )
         layout.addWidget(dlg_title)
 

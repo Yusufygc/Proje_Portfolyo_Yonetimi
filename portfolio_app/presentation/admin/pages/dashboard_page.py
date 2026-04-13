@@ -38,11 +38,16 @@ class DashboardPage(QWidget):
             color: {COLORS['text_primary']};
             font-size: {FONTS['size_2xl']}px;
             font-weight: 700;
+            background: transparent;
+            border: none;
         """)
         layout.addWidget(title)
 
         subtitle = QLabel("Portföy içeriklerine genel bakış")
-        subtitle.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 14px;")
+        subtitle.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 14px;"
+            f"background: transparent; border: none;"
+        )
         layout.addWidget(subtitle)
 
         # İstatistik kartları
@@ -94,11 +99,16 @@ class DashboardPage(QWidget):
             color: {color};
             font-size: 40px;
             font-weight: 700;
+            background: transparent;
+            border: none;
         """)
         col.addWidget(count_lbl)
 
         lbl = QLabel(label)
-        lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 14px;")
+        lbl.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 14px;"
+            f"background: transparent; border: none;"
+        )
         col.addWidget(lbl)
 
         return frame
