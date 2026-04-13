@@ -1,11 +1,10 @@
 """presentation/showcase/sections/certificates_section.py — Sertifikalarım bölümü."""
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QGridLayout
+    QWidget, QVBoxLayout, QLabel, QGridLayout
 )
 from PySide6.QtCore import Qt
 
-from styles.constants import COLORS, FONTS
 from domain.models.certificate import Certificate
 from presentation.showcase.widgets.cert_card import CertCard
 
@@ -19,40 +18,57 @@ class CertificatesSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#certificates_section {{
-                background: {COLORS['grad_certs']};
-            }}
+        self.setStyleSheet("""
+            QWidget#certificates_section {
+                background: #161B22;
+                border-top: 1px solid #21262D;
+            }
         """)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(64, 80, 64, 80)
         layout.setSpacing(40)
 
-        # Başlık
+        # Section header
+        header_col = QVBoxLayout()
+        header_col.setSpacing(8)
+
+        label = QLabel("// SERTİFİKALAR")
+        label.setStyleSheet("""
+            color: #2F81F7;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 3px;
+        """)
+        header_col.addWidget(label)
+
         title = QLabel("Sertifikalarım")
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: {FONTS['size_2xl']}px;
+        title.setStyleSheet("""
+            color: #E6EDF3;
+            font-size: 36px;
             font-weight: 700;
         """)
-        layout.addWidget(title)
+        header_col.addWidget(title)
 
         subtitle = QLabel("Aldığım eğitimler ve başarı sertifikaları")
-        subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: {FONTS['size_md']}px;")
-        layout.addWidget(subtitle)
+        subtitle.setStyleSheet("""
+            color: #8B949E;
+            font-size: 15px;
+        """)
+        header_col.addWidget(subtitle)
+
+        layout.addLayout(header_col)
 
         self._grid_widget = QWidget()
         self._grid_widget.setStyleSheet("background: transparent;")
         self._grid = QGridLayout(self._grid_widget)
-        self._grid.setSpacing(20)
+        self._grid.setSpacing(16)
+        self._grid.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._grid_widget)
 
         self._empty_label = QLabel("Henüz sertifika eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: {FONTS['size_md']}px;")
+        self._empty_label.setStyleSheet("color: #484F58; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 
@@ -67,7 +83,10 @@ class CertificatesSection(QWidget):
             return
 
         self._empty_label.setVisible(False)
-        cols = 4
+        cols = 3 if len(certs) >= 3 else (2 if len(certs) == 2 else 1)
         for i, cert in enumerate(certs):
             card = CertCard(cert)
             self._grid.addWidget(card, i // cols, i % cols)
+
+        # Son sütundan sonrasını stretch et — kartlar sola yaslanır
+        self._grid.setColumnStretch(cols, 1)

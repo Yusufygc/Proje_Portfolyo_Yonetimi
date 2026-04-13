@@ -4,51 +4,51 @@ Widget'larda hardcode renk YASAK — buradan al.
 """
 
 COLORS = {
-    # Arka planlar
-    "bg_primary":    "#0F1923",   # Koyu lacivert-siyah
-    "bg_secondary":  "#162030",
-    "bg_card":       "#1C2A3A",
-    "bg_glass":      "rgba(28, 42, 58, 0.7)",
-    "bg_input":      "#1A2535",
-    "bg_hover":      "#243447",
-    "bg_active":     "#2A3D52",
+    # Arka planlar — GitHub dark tema
+    "bg_primary":    "#0D1117",
+    "bg_secondary":  "#161B22",
+    "bg_card":       "#161B22",
+    "bg_glass":      "rgba(22, 27, 34, 0.7)",
+    "bg_input":      "#0D1117",
+    "bg_hover":      "#1C2128",
+    "bg_active":     "#21262D",
 
-    # Silver/Blue/White ton sistemi
-    "accent_blue":   "#4A9EFF",
-    "accent_blue_dark": "#2D7DD2",
+    # Renk paleti
+    "accent_blue":   "#2F81F7",
+    "accent_blue_dark": "#388BFD",
     "accent_silver": "#B0BEC5",
-    "text_primary":  "#E8EDF2",
-    "text_secondary": "#8CA0B3",
-    "text_muted":    "#4A5C6E",
+    "text_primary":  "#E6EDF3",
+    "text_secondary": "#8B949E",
+    "text_muted":    "#484F58",
     "white":         "#FFFFFF",
 
     # Border
-    "border":        "#243447",
-    "border_light":  "#2D4057",
-    "border_focus":  "#4A9EFF",
+    "border":        "#30363D",
+    "border_light":  "#21262D",
+    "border_focus":  "#2F81F7",
 
     # Gradyanlar (vitrin bölüm geçişleri)
-    "grad_about":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0F1923, stop:1 #162030)",
-    "grad_projects": "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #162030, stop:1 #0D1F2D)",
-    "grad_vision":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0D1F2D, stop:1 #111827)",
-    "grad_certs":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #111827, stop:1 #0F1923)",
-    "grad_hero":     "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0F1923, stop:0.5 #162030, stop:1 #0D1F2D)",
-    "grad_button":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #5AADFF, stop:1 #4A9EFF)",
-    "grad_sidebar":  "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0D1620, stop:1 #0F1923)",
+    "grad_about":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0D1117, stop:1 #161B22)",
+    "grad_projects": "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #161B22, stop:1 #0D1117)",
+    "grad_vision":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0D1117, stop:1 #161B22)",
+    "grad_certs":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #161B22, stop:1 #0D1117)",
+    "grad_hero":     "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0D1117, stop:0.5 #161B22, stop:1 #0D1117)",
+    "grad_button":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #388BFD, stop:1 #2F81F7)",
+    "grad_sidebar":  "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0D1117, stop:1 #161B22)",
 
     # Durum renkleri
-    "success":       "#4CAF7D",
-    "success_dark":  "#3A8F61",
-    "warning":       "#F59E0B",
-    "warning_dark":  "#D97706",
+    "success":       "#3FB950",
+    "success_dark":  "#2EA043",
+    "warning":       "#D29922",
+    "warning_dark":  "#BB8009",
     "error":         "#EF4444",
     "error_dark":    "#DC2626",
-    "info":          "#4A9EFF",
+    "info":          "#2F81F7",
 
     # Tag / chip renkleri
-    "tag_bg":        "#1E3348",
-    "tag_border":    "#2D5070",
-    "tag_text":      "#7EB8FF",
+    "tag_bg":        "rgba(47, 129, 247, 0.1)",
+    "tag_border":    "rgba(47, 129, 247, 0.3)",
+    "tag_text":      "#79C0FF",
 }
 
 FONTS = {

@@ -68,6 +68,7 @@ class ShowcaseWindow(QMainWindow):
         # Navbar (sabit)
         self._navbar = ShowcaseNavbar()
         self._navbar.scroll_requested.connect(self._scroll_to_section)
+        self._navbar.admin_requested.connect(self.switch_to_admin)
         root.addWidget(self._navbar)
 
         # Scroll area
