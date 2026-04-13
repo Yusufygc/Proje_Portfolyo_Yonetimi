@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QComboBox, QCheckBox, QFormLayout, QSpinBox, QSplitter,
     QListWidget, QListWidgetItem
 )
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
 from styles.constants import COLORS, FONTS
@@ -25,45 +25,56 @@ class ProjectsPage(QWidget):
         super().__init__(parent)
         self._ctrl = controller
         self._selected_project: Project | None = None
+        self._projects_cache: list[Project] = []
         self._ctrl.projects_changed.connect(self.refresh)
         self._ctrl.error_occurred.connect(lambda msg: show_toast(self, msg, Toast.ERROR))
         self._build_ui()
         self.refresh()
 
+    # ── UI inşası ───────────────────────────────────────────────────────────
+
     def _build_ui(self) -> None:
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        root = QVBoxLayout(self)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
 
         # Üst bar
         header = QWidget()
-        header.setStyleSheet(f"background: {COLORS['bg_secondary']}; border-bottom: 1px solid {COLORS['border']};")
-        h_layout = QHBoxLayout(header)
-        h_layout.setContentsMargins(24, 16, 24, 16)
+        header.setFixedHeight(60)
+        header.setStyleSheet(
+            f"background: {COLORS['bg_secondary']};"
+            f"border-bottom: 1px solid {COLORS['border']};"
+        )
+        h_lay = QHBoxLayout(header)
+        h_lay.setContentsMargins(24, 0, 24, 0)
 
         title = QLabel("Projeler")
-        title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: {FONTS['size_lg']}px; font-weight: 700;")
-        h_layout.addWidget(title)
-        h_layout.addStretch()
+        title.setStyleSheet(
+            f"color: {COLORS['text_primary']};"
+            f"font-size: {FONTS['size_lg']}px;"
+            f"font-weight: 700;"
+        )
+        h_lay.addWidget(title)
+        h_lay.addStretch()
 
         add_btn = QPushButton("+ Yeni Proje")
         add_btn.setCursor(Qt.PointingHandCursor)
         add_btn.clicked.connect(self._open_create_dialog)
-        h_layout.addWidget(add_btn)
+        h_lay.addWidget(add_btn)
 
-        layout.addWidget(header)
+        root.addWidget(header)
 
-        # İçerik: sol liste, sağ detay/task
+        # Splitter: sol liste | sağ detay
         splitter = QSplitter(Qt.Horizontal)
         splitter.setStyleSheet(f"QSplitter {{ background: {COLORS['bg_primary']}; }}")
 
-        # Sol: Proje listesi
-        left = QWidget()
-        left.setMinimumWidth(280)
-        left.setMaximumWidth(380)
-        left_layout = QVBoxLayout(left)
-        left_layout.setContentsMargins(12, 12, 6, 12)
-        left_layout.setSpacing(8)
+        # Sol — proje listesi
+        left_wrap = QWidget()
+        left_wrap.setMinimumWidth(220)
+        left_wrap.setMaximumWidth(340)
+        left_lay = QVBoxLayout(left_wrap)
+        left_lay.setContentsMargins(12, 12, 6, 12)
+        left_lay.setSpacing(0)
 
         self._project_list = QListWidget()
         self._project_list.setStyleSheet(f"""
@@ -71,82 +82,161 @@ class ProjectsPage(QWidget):
                 background: {COLORS['bg_secondary']};
                 border: 1px solid {COLORS['border']};
                 border-radius: 8px;
+                outline: none;
             }}
             QListWidget::item {{
-                padding: 12px;
+                padding: 14px 16px;
                 border-bottom: 1px solid {COLORS['border']};
                 color: {COLORS['text_primary']};
+                font-size: 14px;
+            }}
+            QListWidget::item:last {{
+                border-bottom: none;
             }}
             QListWidget::item:selected {{
                 background: rgba(74, 158, 255, 0.15);
                 color: {COLORS['accent_blue']};
+                font-weight: 600;
             }}
-            QListWidget::item:hover {{
+            QListWidget::item:hover:!selected {{
                 background: {COLORS['bg_hover']};
             }}
         """)
         self._project_list.currentRowChanged.connect(self._on_project_selected)
-        left_layout.addWidget(self._project_list)
-        splitter.addWidget(left)
+        left_lay.addWidget(self._project_list)
 
-        # Sağ: Detay + task'lar
-        right = QWidget()
-        right_layout = QVBoxLayout(right)
-        right_layout.setContentsMargins(6, 12, 12, 12)
-        right_layout.setSpacing(16)
+        splitter.addWidget(left_wrap)
 
-        self._detail_area = QScrollArea()
-        self._detail_area.setWidgetResizable(True)
-        self._detail_area.setStyleSheet("QScrollArea { border: none; }")
-        self._detail_widget = QWidget()
-        self._detail_layout = QVBoxLayout(self._detail_widget)
-        self._detail_layout.setContentsMargins(0, 0, 0, 0)
-        self._detail_area.setWidget(self._detail_widget)
-        right_layout.addWidget(self._detail_area)
+        # Sağ — detay + tasklar
+        self._detail_scroll = QScrollArea()
+        self._detail_scroll.setWidgetResizable(True)
+        self._detail_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self._detail_scroll.setStyleSheet(
+            "QScrollArea { border: none; background: transparent; }"
+        )
+        self._detail_scroll.setWidget(self._build_empty_detail())
 
-        splitter.addWidget(right)
-        splitter.setSizes([300, 700])
-        layout.addWidget(splitter)
+        splitter.addWidget(self._detail_scroll)
+        splitter.setSizes([260, 740])
+
+        root.addWidget(splitter)
+
+    def _build_empty_detail(self) -> QWidget:
+        w = QWidget()
+        w.setStyleSheet(f"background: {COLORS['bg_primary']};")
+        lay = QVBoxLayout(w)
+        lay.setAlignment(Qt.AlignCenter)
+        lbl = QLabel("Soldaki listeden bir proje seçin.")
+        lbl.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 14px;")
+        lay.addWidget(lbl)
+        return w
+
+    # ── Veri ────────────────────────────────────────────────────────────────
 
     def refresh(self) -> None:
-        projects = self._ctrl.get_all()
+        selected_id = self._selected_project.id if self._selected_project else None
+        self._projects_cache = self._ctrl.get_all()
+
+        self._project_list.blockSignals(True)
         self._project_list.clear()
-        self._projects_cache = projects
-        for p in projects:
+        restore_row = -1
+        for i, p in enumerate(self._projects_cache):
             item = QListWidgetItem(p.title)
             item.setData(Qt.UserRole, p.id)
             self._project_list.addItem(item)
+            if p.id == selected_id:
+                restore_row = i
+        self._project_list.blockSignals(False)
+
+        if restore_row >= 0:
+            self._project_list.setCurrentRow(restore_row)
+        elif self._projects_cache:
+            self._project_list.setCurrentRow(0)
+        else:
+            self._selected_project = None
+            self._detail_scroll.setWidget(self._build_empty_detail())
 
     def _on_project_selected(self, row: int) -> None:
         if row < 0 or row >= len(self._projects_cache):
             return
-        project = self._projects_cache[row]
-        self._selected_project = project
-        self._render_detail(project)
+        self._selected_project = self._projects_cache[row]
+        self._render_detail(self._selected_project)
+
+    # ── Detay render ────────────────────────────────────────────────────────
 
     def _render_detail(self, project: Project) -> None:
-        # Temizle
-        while self._detail_layout.count():
-            item = self._detail_layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
+        """Her seferinde sıfırdan yeni bir widget oluştur, scroll area'ya ata."""
+        content = QWidget()
+        content.setStyleSheet(f"background: {COLORS['bg_primary']};")
+        lay = QVBoxLayout(content)
+        lay.setContentsMargins(16, 16, 16, 16)
+        lay.setSpacing(16)
 
-        # Üst bilgi
-        info_frame = QFrame()
-        info_frame.setStyleSheet(f"""
+        # Proje bilgi kartı
+        lay.addWidget(self._build_info_card(project))
+
+        # Task başlık satırı
+        task_hdr = QHBoxLayout()
+        task_hdr.setContentsMargins(0, 0, 0, 0)
+        task_lbl = QLabel("Görevler / Fikirler / Tasarımlar")
+        task_lbl.setStyleSheet(
+            f"color: {COLORS['text_primary']}; font-size: 15px; font-weight: 600;"
+        )
+        task_hdr.addWidget(task_lbl)
+        task_hdr.addStretch()
+
+        add_task_btn = QPushButton("+ Task Ekle")
+        add_task_btn.setObjectName("btn_flat")
+        add_task_btn.setCursor(Qt.PointingHandCursor)
+        add_task_btn.clicked.connect(lambda: self._open_task_dialog(project.id))
+        task_hdr.addWidget(add_task_btn)
+
+        task_hdr_widget = QWidget()
+        task_hdr_widget.setStyleSheet("background: transparent;")
+        task_hdr_widget.setLayout(task_hdr)
+        lay.addWidget(task_hdr_widget)
+
+        # Task kartları
+        tasks = self._ctrl.get_tasks(project.id)
+        if tasks:
+            for task in tasks:
+                lay.addWidget(self._build_task_card(task))
+        else:
+            no_lbl = QLabel("Henüz task eklenmemiş.")
+            no_lbl.setStyleSheet(
+                f"color: {COLORS['text_muted']}; font-size: 13px; padding: 8px 0;"
+            )
+            lay.addWidget(no_lbl)
+
+        lay.addStretch()
+
+        # Eski widget'ı kapat, yenisini ata
+        old = self._detail_scroll.takeWidget()
+        if old:
+            old.deleteLater()
+        self._detail_scroll.setWidget(content)
+
+    def _build_info_card(self, project: Project) -> QFrame:
+        frame = QFrame()
+        frame.setStyleSheet(f"""
             QFrame {{
                 background: {COLORS['bg_card']};
                 border: 1px solid {COLORS['border']};
                 border-radius: 12px;
             }}
         """)
-        info_col = QVBoxLayout(info_frame)
-        info_col.setContentsMargins(20, 16, 20, 16)
-        info_col.setSpacing(8)
+        col = QVBoxLayout(frame)
+        col.setContentsMargins(20, 16, 20, 16)
+        col.setSpacing(10)
 
+        # Başlık + butonlar
         title_row = QHBoxLayout()
         title_lbl = QLabel(project.title)
-        title_lbl.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: {FONTS['size_lg']}px; font-weight: 700;")
+        title_lbl.setStyleSheet(
+            f"color: {COLORS['text_primary']};"
+            f"font-size: {FONTS['size_lg']}px;"
+            f"font-weight: 700;"
+        )
         title_row.addWidget(title_lbl)
         title_row.addStretch()
 
@@ -162,53 +252,28 @@ class ProjectsPage(QWidget):
         del_btn.clicked.connect(lambda: self._delete_project(project))
         title_row.addWidget(del_btn)
 
-        info_col.addLayout(title_row)
+        col.addLayout(title_row)
 
+        # Durum
         status_lbl = QLabel(f"Durum: {project.status.label()}")
         status_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 13px;")
-        info_col.addWidget(status_lbl)
+        col.addWidget(status_lbl)
 
         if project.short_description:
             desc_lbl = QLabel(project.short_description)
             desc_lbl.setWordWrap(True)
             desc_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 13px;")
-            info_col.addWidget(desc_lbl)
+            col.addWidget(desc_lbl)
 
         if project.tags:
             tags_str = "  ".join(f"#{t.tag_name}" for t in project.tags)
             tags_lbl = QLabel(tags_str)
             tags_lbl.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 12px;")
-            info_col.addWidget(tags_lbl)
+            col.addWidget(tags_lbl)
 
-        self._detail_layout.addWidget(info_frame)
+        return frame
 
-        # Task bölümü
-        task_header = QHBoxLayout()
-        task_title = QLabel("Görevler / Fikirler / Tasarımlar")
-        task_title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 15px; font-weight: 600;")
-        task_header.addWidget(task_title)
-        task_header.addStretch()
-
-        add_task_btn = QPushButton("+ Task Ekle")
-        add_task_btn.setObjectName("btn_flat")
-        add_task_btn.setCursor(Qt.PointingHandCursor)
-        add_task_btn.clicked.connect(lambda: self._open_task_dialog(project.id))
-        task_header.addWidget(add_task_btn)
-        self._detail_layout.addLayout(task_header)
-
-        tasks = self._ctrl.get_tasks(project.id)
-        if tasks:
-            for task in tasks:
-                task_card = self._make_task_card(task)
-                self._detail_layout.addWidget(task_card)
-        else:
-            no_task = QLabel("Henüz task eklenmemiş.")
-            no_task.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 13px;")
-            self._detail_layout.addWidget(no_task)
-
-        self._detail_layout.addStretch()
-
-    def _make_task_card(self, task) -> QFrame:
+    def _build_task_card(self, task) -> QFrame:
         frame = QFrame()
         frame.setStyleSheet(f"""
             QFrame {{
@@ -219,12 +284,14 @@ class ProjectsPage(QWidget):
             }}
         """)
         row = QHBoxLayout(frame)
-        row.setContentsMargins(12, 8, 12, 8)
+        row.setContentsMargins(12, 10, 12, 10)
         row.setSpacing(12)
 
         type_lbl = QLabel(task.type.label())
         type_lbl.setFixedWidth(70)
-        type_lbl.setStyleSheet(f"color: {self._task_color(task.type)}; font-size: 11px; font-weight: 600;")
+        type_lbl.setStyleSheet(
+            f"color: {self._task_color(task.type)}; font-size: 11px; font-weight: 600;"
+        )
         row.addWidget(type_lbl)
 
         title_lbl = QLabel(task.title)
@@ -254,6 +321,8 @@ class ProjectsPage(QWidget):
             TaskType.TASARIM: COLORS["success"],
         }.get(task_type, COLORS["accent_silver"])
 
+    # ── Eylemler ────────────────────────────────────────────────────────────
+
     def _open_create_dialog(self) -> None:
         dlg = ProjectDialog(self)
         if dlg.exec() == QDialog.Accepted:
@@ -268,10 +337,6 @@ class ProjectsPage(QWidget):
         if confirm(self, f'"{project.title}" projesini silmek istediğinizden emin misiniz?', danger=True):
             self._ctrl.delete(project.id)
             self._selected_project = None
-            while self._detail_layout.count():
-                item = self._detail_layout.takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
 
     def _open_task_dialog(self, project_id: int) -> None:
         dlg = TaskDialog(self)
@@ -279,13 +344,17 @@ class ProjectsPage(QWidget):
             self._ctrl.create_task(project_id, dlg.get_data())
             if self._selected_project and self._selected_project.id == project_id:
                 proj = self._ctrl.get_by_id(project_id)
-                self._render_detail(proj)
+                if proj:
+                    self._selected_project = proj
+                    self._render_detail(proj)
 
     def _delete_task(self, task_id: int) -> None:
         self._ctrl.delete_task(task_id)
         if self._selected_project:
             proj = self._ctrl.get_by_id(self._selected_project.id)
-            self._render_detail(proj)
+            if proj:
+                self._selected_project = proj
+                self._render_detail(proj)
 
 
 # ── Proje Dialog ─────────────────────────────────────────────────────────────
@@ -315,40 +384,40 @@ class ProjectDialog(QDialog):
         form.setSpacing(12)
         form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-        self._title_input    = QLineEdit()
+        self._title_input = QLineEdit()
         self._title_input.setPlaceholderText("Proje başlığı")
         form.addRow("Başlık *", self._title_input)
 
-        self._short_desc     = QLineEdit()
+        self._short_desc = QLineEdit()
         self._short_desc.setPlaceholderText("Kısa açıklama (kart özeti)")
         form.addRow("Kısa Açıklama", self._short_desc)
 
-        self._full_desc      = QTextEdit()
+        self._full_desc = QTextEdit()
         self._full_desc.setPlaceholderText("Detaylı açıklama...")
         self._full_desc.setMaximumHeight(120)
         form.addRow("Detay", self._full_desc)
 
-        self._status_combo   = QComboBox()
+        self._status_combo = QComboBox()
         for s in ProjectStatus:
             self._status_combo.addItem(s.label(), s.value)
         form.addRow("Durum", self._status_combo)
 
-        self._github_input   = QLineEdit()
+        self._github_input = QLineEdit()
         self._github_input.setPlaceholderText("https://github.com/...")
         form.addRow("GitHub URL", self._github_input)
 
-        self._demo_input     = QLineEdit()
+        self._demo_input = QLineEdit()
         self._demo_input.setPlaceholderText("https://...")
         form.addRow("Demo URL", self._demo_input)
 
-        self._tags_input     = QLineEdit()
+        self._tags_input = QLineEdit()
         self._tags_input.setPlaceholderText("Python, PySide6, SQLite (virgülle ayır)")
         form.addRow("Etiketler", self._tags_input)
 
         self._featured_check = QCheckBox("Öne Çıkan")
         form.addRow("", self._featured_check)
 
-        self._order_spin     = QSpinBox()
+        self._order_spin = QSpinBox()
         self._order_spin.setRange(0, 999)
         form.addRow("Sıralama", self._order_spin)
 
@@ -360,7 +429,6 @@ class ProjectDialog(QDialog):
         cancel.setObjectName("btn_flat")
         cancel.clicked.connect(self.reject)
         btn_row.addWidget(cancel)
-
         save = QPushButton("Kaydet")
         save.clicked.connect(self.accept)
         btn_row.addWidget(save)
@@ -368,8 +436,8 @@ class ProjectDialog(QDialog):
 
     def _populate(self, p: Project) -> None:
         self._title_input.setText(p.title)
-        self._short_desc.setText(p.short_description)
-        self._full_desc.setPlainText(p.full_description)
+        self._short_desc.setText(p.short_description or "")
+        self._full_desc.setPlainText(p.full_description or "")
         idx = self._status_combo.findData(p.status.value)
         if idx >= 0:
             self._status_combo.setCurrentIndex(idx)

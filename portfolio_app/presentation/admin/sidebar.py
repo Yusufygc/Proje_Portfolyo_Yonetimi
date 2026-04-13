@@ -93,10 +93,11 @@ class AdminSidebar(QWidget):
         layout.addStretch()
 
         # Geri butonu (vitrine dön)
-        back_btn = QPushButton("← Vitrine Dön")
-        back_btn.setObjectName("sidebar_btn")
-        back_btn.setCursor(Qt.PointingHandCursor)
-        back_btn.setStyleSheet(f"""
+        self._back_btn = QPushButton("← Vitrine Dön")
+        self._back_btn.setObjectName("sidebar_btn")
+        self._back_btn.setCursor(Qt.PointingHandCursor)
+        self._back_btn.setToolTip("Vitrine Dön")
+        self._back_btn.setStyleSheet(f"""
             QPushButton {{
                 background: transparent;
                 border: none;
@@ -108,19 +109,20 @@ class AdminSidebar(QWidget):
             }}
             QPushButton:hover {{ color: {COLORS['text_secondary']}; background: rgba(74,158,255,0.05); }}
         """)
-        back_btn.clicked.connect(lambda: self.page_requested.emit("__back__"))
-        layout.addWidget(back_btn)
+        self._back_btn.clicked.connect(lambda: self.page_requested.emit("__back__"))
+        layout.addWidget(self._back_btn)
 
         self._set_active(self._current_page)
 
     def _make_page_btn(self, page_id: str, label: str, icon_char: str) -> QPushButton:
-        btn = QPushButton(f"  {icon_char}  {label}")
+        btn = QPushButton(f"   {label}")
         btn.setObjectName("sidebar_btn")
         btn.setCursor(Qt.PointingHandCursor)
         btn.setCheckable(False)
         btn.clicked.connect(lambda: self._on_page_click(page_id))
         btn.setStyleSheet(self._btn_style(False))
         btn.setMinimumHeight(40)
+        btn.setToolTip(label)
         return btn
 
     def _on_page_click(self, page_id: str) -> None:
@@ -133,6 +135,13 @@ class AdminSidebar(QWidget):
             btn.setStyleSheet(self._btn_style(pid == page_id))
 
     def _btn_style(self, active: bool) -> str:
+        if self._expanded:
+            padding = "10px 12px"
+            align   = "left"
+        else:
+            padding = "10px 4px"
+            align   = "center"
+
         if active:
             return f"""
                 QPushButton {{
@@ -142,8 +151,9 @@ class AdminSidebar(QWidget):
                     border-radius: 8px;
                     color: {COLORS['accent_blue']};
                     font-size: 14px;
-                    text-align: left;
-                    padding: 10px 12px;
+                    font-weight: 600;
+                    text-align: {align};
+                    padding: {padding};
                 }}
             """
         return f"""
@@ -153,8 +163,8 @@ class AdminSidebar(QWidget):
                 border-radius: 8px;
                 color: {COLORS['text_secondary']};
                 font-size: 14px;
-                text-align: left;
-                padding: 10px 12px;
+                text-align: {align};
+                padding: {padding};
             }}
             QPushButton:hover {{
                 background: rgba(74, 158, 255, 0.08);
@@ -164,7 +174,9 @@ class AdminSidebar(QWidget):
 
     def toggle(self) -> None:
         """Sidebar'ı genişlet veya daralt (animasyonlu)."""
-        target = SIDEBAR_WIDTH_COLLAPSED if self._expanded else SIDEBAR_WIDTH_EXPANDED
+        will_collapse = self._expanded
+        target = SIDEBAR_WIDTH_COLLAPSED if will_collapse else SIDEBAR_WIDTH_EXPANDED
+
         self._anim = QPropertyAnimation(self, b"minimumWidth", self)
         self._anim.setStartValue(self.width())
         self._anim.setEndValue(target)
@@ -177,7 +189,24 @@ class AdminSidebar(QWidget):
         anim2.setDuration(ANIMATION_DURATION_MS)
         anim2.setEasingCurve(QEasingCurve.OutCubic)
         anim2.start()
-
         self._anim.start()
+
         self._expanded = not self._expanded
         self._logo.setVisible(self._expanded)
+        self._update_btn_labels()
+
+    def _update_btn_labels(self) -> None:
+        """Genisletilmis: tam yazi. Daraltilmis: sadece ikon harfi."""
+        for (page_id, label, icon_char), btn in zip(self.PAGES, self._page_btns.values()):
+            if self._expanded:
+                btn.setText(f"   {label}")
+            else:
+                btn.setText(icon_char)
+
+        # Stil de guncellenmeli (padding/hizalama degisiyor)
+        self._set_active(self._current_page)
+
+        if self._expanded:
+            self._back_btn.setText("← Vitrine Dön")
+        else:
+            self._back_btn.setText("←")
