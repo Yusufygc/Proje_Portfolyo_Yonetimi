@@ -1,12 +1,14 @@
 """presentation/admin/pages/projects_page.py — Proje CRUD + task yönetimi."""
 
+import json
+
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QScrollArea, QFrame, QDialog, QLineEdit, QTextEdit,
     QComboBox, QCheckBox, QFormLayout, QSpinBox, QSplitter,
-    QListWidget, QListWidgetItem
+    QListWidget, QListWidgetItem, QSizePolicy
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QFont
 
 from styles.constants import COLORS, FONTS
@@ -17,6 +19,28 @@ from domain.enums.task_type import TaskType, TaskStatus
 from presentation.shared.confirm_dialog import confirm
 from presentation.shared.toast import show_toast, Toast
 
+
+# ── Todo yardımcıları ────────────────────────────────────────────────────────
+
+def todos_to_json(todos: list[dict]) -> str:
+    return json.dumps(todos, ensure_ascii=False)
+
+
+def json_to_todos(text: str) -> list[dict]:
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+        if isinstance(data, list):
+            return [t for t in data if isinstance(t, dict) and "text" in t]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    if text.strip():
+        return [{"text": text.strip(), "done": False}]
+    return []
+
+
+# ── Ana sayfa ────────────────────────────────────────────────────────────────
 
 class ProjectsPage(QWidget):
     """Admin proje yönetim sayfası."""
@@ -166,14 +190,12 @@ class ProjectsPage(QWidget):
     # ── Detay render ────────────────────────────────────────────────────────
 
     def _render_detail(self, project: Project) -> None:
-        """Her seferinde sıfırdan yeni bir widget oluştur, scroll area'ya ata."""
         content = QWidget()
         content.setStyleSheet(f"background: {COLORS['bg_primary']};")
         lay = QVBoxLayout(content)
         lay.setContentsMargins(16, 16, 16, 16)
         lay.setSpacing(16)
 
-        # Proje bilgi kartı
         lay.addWidget(self._build_info_card(project))
 
         # Task başlık satırı
@@ -202,7 +224,8 @@ class ProjectsPage(QWidget):
         tasks = self._ctrl.get_tasks(project.id)
         if tasks:
             for task in tasks:
-                lay.addWidget(self._build_task_card(task))
+                card = TaskCardWidget(task, self._ctrl, self._refresh_detail)
+                lay.addWidget(card)
         else:
             no_lbl = QLabel("Henüz task eklenmemiş.")
             no_lbl.setStyleSheet(
@@ -212,11 +235,17 @@ class ProjectsPage(QWidget):
 
         lay.addStretch()
 
-        # Eski widget'ı kapat, yenisini ata
         old = self._detail_scroll.takeWidget()
         if old:
             old.deleteLater()
         self._detail_scroll.setWidget(content)
+
+    def _refresh_detail(self) -> None:
+        if self._selected_project:
+            proj = self._ctrl.get_by_id(self._selected_project.id)
+            if proj:
+                self._selected_project = proj
+                self._render_detail(proj)
 
     def _build_info_card(self, project: Project) -> QFrame:
         frame = QFrame()
@@ -231,13 +260,11 @@ class ProjectsPage(QWidget):
         col.setContentsMargins(20, 16, 20, 16)
         col.setSpacing(10)
 
-        # Başlık + butonlar
         title_row = QHBoxLayout()
         title_lbl = QLabel(project.title)
         title_lbl.setStyleSheet(
             f"color: {COLORS['text_primary']};"
-            f"font-size: {FONTS['size_lg']}px;"
-            f"font-weight: 700;"
+            f"font-size: {FONTS['size_lg']}px; font-weight: 700;"
             f"background: transparent; border: none;"
         )
         title_row.addWidget(title_lbl)
@@ -257,7 +284,6 @@ class ProjectsPage(QWidget):
 
         col.addLayout(title_row)
 
-        # Durum
         status_lbl = QLabel(f"Durum: {project.status.label()}")
         status_lbl.setStyleSheet(
             f"color: {COLORS['text_secondary']}; font-size: 13px;"
@@ -285,61 +311,6 @@ class ProjectsPage(QWidget):
 
         return frame
 
-    def _build_task_card(self, task) -> QFrame:
-        frame = QFrame()
-        frame.setStyleSheet(f"""
-            QFrame {{
-                background: {COLORS['bg_card']};
-                border: 1px solid {COLORS['border']};
-                border-left: 3px solid {self._task_color(task.type)};
-                border-radius: 8px;
-            }}
-        """)
-        row = QHBoxLayout(frame)
-        row.setContentsMargins(12, 10, 12, 10)
-        row.setSpacing(12)
-
-        type_lbl = QLabel(task.type.label())
-        type_lbl.setFixedWidth(70)
-        type_lbl.setStyleSheet(
-            f"color: {self._task_color(task.type)}; font-size: 11px; font-weight: 600;"
-            f"background: transparent; border: none;"
-        )
-        row.addWidget(type_lbl)
-
-        title_lbl = QLabel(task.title)
-        title_lbl.setStyleSheet(
-            f"color: {COLORS['text_primary']}; font-size: 13px;"
-            f"background: transparent; border: none;"
-        )
-        title_lbl.setWordWrap(True)
-        row.addWidget(title_lbl, stretch=1)
-
-        status_lbl = QLabel(task.status.label())
-        status_lbl.setStyleSheet(
-            f"color: {COLORS['text_secondary']}; font-size: 11px;"
-            f"background: transparent; border: none;"
-        )
-        row.addWidget(status_lbl)
-
-        del_btn = QPushButton("✕")
-        del_btn.setObjectName("btn_icon")
-        del_btn.setCursor(Qt.PointingHandCursor)
-        del_btn.setFixedSize(28, 28)
-        task_id = task.id
-        del_btn.clicked.connect(lambda: self._delete_task(task_id))
-        row.addWidget(del_btn)
-
-        return frame
-
-    @staticmethod
-    def _task_color(task_type) -> str:
-        return {
-            TaskType.GOREV:   COLORS["accent_blue"],
-            TaskType.FIKIR:   COLORS["warning"],
-            TaskType.TASARIM: COLORS["success"],
-        }.get(task_type, COLORS["accent_silver"])
-
     # ── Eylemler ────────────────────────────────────────────────────────────
 
     def _open_create_dialog(self) -> None:
@@ -361,19 +332,299 @@ class ProjectsPage(QWidget):
         dlg = TaskDialog(self)
         if dlg.exec() == QDialog.Accepted:
             self._ctrl.create_task(project_id, dlg.get_data())
-            if self._selected_project and self._selected_project.id == project_id:
-                proj = self._ctrl.get_by_id(project_id)
-                if proj:
-                    self._selected_project = proj
-                    self._render_detail(proj)
+            self._refresh_detail()
 
-    def _delete_task(self, task_id: int) -> None:
-        self._ctrl.delete_task(task_id)
-        if self._selected_project:
-            proj = self._ctrl.get_by_id(self._selected_project.id)
-            if proj:
-                self._selected_project = proj
-                self._render_detail(proj)
+
+# ── Task Kart Widget (accordion + todo list) ──────────────────────────────────
+
+class TaskCardWidget(QFrame):
+    """Tıklanınca açılan/kapanan task kartı. İçinde todo listesi."""
+
+    def __init__(self, task, controller: ProjectController, refresh_cb, parent=None):
+        super().__init__(parent)
+        self._task = task
+        self._ctrl = controller
+        self._refresh_cb = refresh_cb
+        self._expanded = False
+        self._todos: list[dict] = json_to_todos(task.description)
+
+        self.setStyleSheet(f"""
+            TaskCardWidget {{
+                background: {COLORS['bg_card']};
+                border: 1px solid {COLORS['border']};
+                border-left: 3px solid {self._type_color()};
+                border-radius: 8px;
+            }}
+        """)
+        self._build_ui()
+
+    def _type_color(self) -> str:
+        return {
+            TaskType.GOREV:   COLORS["accent_blue"],
+            TaskType.FIKIR:   COLORS["warning"],
+            TaskType.TASARIM: COLORS["success"],
+        }.get(self._task.type, COLORS["accent_silver"])
+
+    def _build_ui(self) -> None:
+        self._root = QVBoxLayout(self)
+        self._root.setContentsMargins(0, 0, 0, 0)
+        self._root.setSpacing(0)
+
+        # ── Header ──────────────────────────────────────────────────────────
+        self._header = QWidget()
+        self._header.setStyleSheet("background: transparent;")
+        self._header.setCursor(Qt.PointingHandCursor)
+        self._header.mousePressEvent = self._toggle_expand
+
+        h_lay = QHBoxLayout(self._header)
+        h_lay.setContentsMargins(12, 10, 12, 10)
+        h_lay.setSpacing(10)
+
+        # Ok işareti
+        self._arrow_lbl = QLabel("▶")
+        self._arrow_lbl.setFixedWidth(14)
+        self._arrow_lbl.setStyleSheet(
+            f"color: {COLORS['text_muted']}; font-size: 10px;"
+            f"background: transparent; border: none;"
+        )
+        h_lay.addWidget(self._arrow_lbl)
+
+        # Tür etiketi
+        type_lbl = QLabel(self._task.type.label())
+        type_lbl.setFixedWidth(70)
+        type_lbl.setStyleSheet(
+            f"color: {self._type_color()}; font-size: 11px; font-weight: 600;"
+            f"background: transparent; border: none;"
+        )
+        h_lay.addWidget(type_lbl)
+
+        # Başlık
+        self._title_lbl = QLabel(self._task.title)
+        self._title_lbl.setStyleSheet(
+            f"color: {COLORS['text_primary']}; font-size: 13px;"
+            f"background: transparent; border: none;"
+        )
+        self._title_lbl.setWordWrap(False)
+        h_lay.addWidget(self._title_lbl, stretch=1)
+
+        # Durum
+        self._status_lbl = QLabel(self._task.status.label())
+        self._status_lbl.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 11px;"
+            f"background: transparent; border: none;"
+        )
+        h_lay.addWidget(self._status_lbl)
+
+        # Todo sayacı
+        self._counter_lbl = QLabel()
+        self._counter_lbl.setStyleSheet(
+            f"color: {COLORS['accent_blue']}; font-size: 11px;"
+            f"background: transparent; border: none;"
+        )
+        h_lay.addWidget(self._counter_lbl)
+        self._update_counter()
+
+        # Düzenle butonu
+        edit_btn = QPushButton("✎")
+        edit_btn.setObjectName("btn_icon")
+        edit_btn.setCursor(Qt.PointingHandCursor)
+        edit_btn.setFixedSize(28, 28)
+        edit_btn.setToolTip("Düzenle")
+        edit_btn.clicked.connect(self._open_edit)
+        h_lay.addWidget(edit_btn)
+
+        # Sil butonu
+        del_btn = QPushButton("✕")
+        del_btn.setObjectName("btn_icon")
+        del_btn.setCursor(Qt.PointingHandCursor)
+        del_btn.setFixedSize(28, 28)
+        del_btn.setToolTip("Sil")
+        del_btn.clicked.connect(self._delete_task)
+        h_lay.addWidget(del_btn)
+
+        self._root.addWidget(self._header)
+
+        # ── Body (todo listesi) ──────────────────────────────────────────────
+        self._body = QWidget()
+        self._body.setStyleSheet(
+            f"background: {COLORS['bg_secondary']};"
+            f"border-top: 1px solid {COLORS['border_light']};"
+        )
+        self._body.setVisible(False)
+
+        self._body_lay = QVBoxLayout(self._body)
+        self._body_lay.setContentsMargins(48, 10, 12, 12)
+        self._body_lay.setSpacing(4)
+
+        self._rebuild_todo_list()
+
+        self._root.addWidget(self._body)
+
+    # ── Todo listesi ────────────────────────────────────────────────────────
+
+    def _rebuild_todo_list(self) -> None:
+        """Body layout içindeki todo öğelerini sıfırdan yeniden çizer."""
+        # Eski öğeleri temizle (add-input satırı dahil)
+        while self._body_lay.count():
+            item = self._body_lay.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+        if not self._todos:
+            placeholder = QLabel("Henüz görev eklenmemiş. Aşağıdan ekleyebilirsin.")
+            placeholder.setStyleSheet(
+                f"color: {COLORS['text_muted']}; font-size: 12px;"
+                f"background: transparent; border: none; padding: 4px 0;"
+            )
+            self._body_lay.addWidget(placeholder)
+
+        for idx, todo in enumerate(self._todos):
+            self._body_lay.addWidget(self._build_todo_row(idx, todo))
+
+        # Ayırıcı
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setStyleSheet(f"color: {COLORS['border_light']};")
+        self._body_lay.addWidget(sep)
+
+        # Yeni todo girdi satırı
+        add_row = QWidget()
+        add_row.setStyleSheet("background: transparent;")
+        add_lay = QHBoxLayout(add_row)
+        add_lay.setContentsMargins(0, 4, 0, 0)
+        add_lay.setSpacing(8)
+
+        self._todo_input = QLineEdit()
+        self._todo_input.setPlaceholderText("Yeni görev ekle...")
+        self._todo_input.setStyleSheet(
+            f"background: {COLORS['bg_input']}; color: {COLORS['text_primary']};"
+            f"border: 1px solid {COLORS['border']}; border-radius: 4px;"
+            f"padding: 4px 8px; font-size: 12px;"
+        )
+        self._todo_input.returnPressed.connect(self._add_todo)
+        add_lay.addWidget(self._todo_input, stretch=1)
+
+        add_btn = QPushButton("+ Ekle")
+        add_btn.setObjectName("btn_flat")
+        add_btn.setCursor(Qt.PointingHandCursor)
+        add_btn.setFixedHeight(28)
+        add_btn.clicked.connect(self._add_todo)
+        add_lay.addWidget(add_btn)
+
+        self._body_lay.addWidget(add_row)
+
+    def _build_todo_row(self, idx: int, todo: dict) -> QWidget:
+        row = QWidget()
+        row.setStyleSheet("background: transparent;")
+        lay = QHBoxLayout(row)
+        lay.setContentsMargins(0, 2, 0, 2)
+        lay.setSpacing(8)
+
+        done = todo.get("done", False)
+
+        # Checkbox görseli
+        check_lbl = QLabel("✓" if done else "○")
+        check_lbl.setFixedWidth(16)
+        check_lbl.setStyleSheet(
+            f"color: {COLORS['success'] if done else COLORS['text_muted']};"
+            f"font-size: 12px; font-weight: 700;"
+            f"background: transparent; border: none;"
+        )
+        lay.addWidget(check_lbl)
+
+        # Metin
+        text_lbl = QLabel(todo["text"])
+        if done:
+            text_lbl.setStyleSheet(
+                f"color: {COLORS['text_muted']}; font-size: 12px; "
+                f"text-decoration: line-through;"
+                f"background: transparent; border: none;"
+            )
+        else:
+            text_lbl.setStyleSheet(
+                f"color: {COLORS['text_primary']}; font-size: 12px;"
+                f"background: transparent; border: none;"
+            )
+        text_lbl.setCursor(Qt.PointingHandCursor)
+        text_lbl.mousePressEvent = lambda e, i=idx: self._toggle_todo(i)
+        lay.addWidget(text_lbl, stretch=1)
+
+        # Sil butonu
+        del_btn = QPushButton("✕")
+        del_btn.setObjectName("btn_icon")
+        del_btn.setCursor(Qt.PointingHandCursor)
+        del_btn.setFixedSize(22, 22)
+        del_btn.clicked.connect(lambda checked=False, i=idx: self._remove_todo(i))
+        lay.addWidget(del_btn)
+
+        return row
+
+    def _add_todo(self) -> None:
+        text = self._todo_input.text().strip()
+        if not text:
+            return
+        self._todos.append({"text": text, "done": False})
+        self._save_todos()
+        self._rebuild_todo_list()
+        self._update_counter()
+        self._todo_input.clear()
+        self._todo_input.setFocus()
+
+    def _toggle_todo(self, idx: int) -> None:
+        if 0 <= idx < len(self._todos):
+            self._todos[idx]["done"] = not self._todos[idx].get("done", False)
+            self._save_todos()
+            self._rebuild_todo_list()
+            self._update_counter()
+
+    def _remove_todo(self, idx: int) -> None:
+        if 0 <= idx < len(self._todos):
+            del self._todos[idx]
+            self._save_todos()
+            self._rebuild_todo_list()
+            self._update_counter()
+
+    def _save_todos(self) -> None:
+        # blockSignals: todo değişikliği küçük bir micro-update — tüm sayfayı yeniden
+        # render etmeden sadece DB'ye yaz, UI'ı yerel olarak güncelle.
+        self._ctrl.blockSignals(True)
+        self._ctrl.update_task(self._task.id, {
+            "type":        self._task.type.value,
+            "title":       self._task.title,
+            "description": todos_to_json(self._todos),
+            "status":      self._task.status.value,
+        })
+        self._ctrl.blockSignals(False)
+
+    def _update_counter(self) -> None:
+        if not self._todos:
+            self._counter_lbl.setText("")
+            return
+        done_count = sum(1 for t in self._todos if t.get("done"))
+        self._counter_lbl.setText(f"{done_count}/{len(self._todos)}")
+
+    # ── Akordiyon ───────────────────────────────────────────────────────────
+
+    def _toggle_expand(self, event=None) -> None:
+        self._expanded = not self._expanded
+        self._arrow_lbl.setText("▼" if self._expanded else "▶")
+        self._body.setVisible(self._expanded)
+        if self._expanded and hasattr(self, "_todo_input"):
+            self._todo_input.setFocus()
+
+    # ── Task düzenleme / silme ───────────────────────────────────────────────
+
+    def _open_edit(self) -> None:
+        dlg = TaskDialog(self, task=self._task, todos=self._todos)
+        if dlg.exec() == QDialog.Accepted:
+            data = dlg.get_data()
+            # projects_changed sinyali tüm detay panelini yeniden render eder —
+            # bu widget silineceği için sonrasında yerel state güncelleme yapma.
+            self._ctrl.update_task(self._task.id, data)
+
+    def _delete_task(self) -> None:
+        self._ctrl.delete_task(self._task.id)
+        self._refresh_cb()
 
 
 # ── Proje Dialog ─────────────────────────────────────────────────────────────
@@ -481,25 +732,38 @@ class ProjectDialog(QDialog):
         }
 
 
-# ── Task Dialog ──────────────────────────────────────────────────────────────
+# ── Task Dialog (ekle / düzenle) ──────────────────────────────────────────────
 
 class TaskDialog(QDialog):
-    def __init__(self, parent=None):
+    """Task ekleme ve düzenleme diyaloğu.
+    Açıklama alanı yerine todo-list editörü içerir.
+    """
+
+    def __init__(self, parent=None, task=None, todos: list[dict] | None = None):
         super().__init__(parent)
-        self.setWindowTitle("Task Ekle")
-        self.setMinimumWidth(400)
+        self._task = task
+        self._todos: list[dict] = list(todos) if todos else []
+        self.setWindowTitle("Task Ekle" if not task else "Task Düzenle")
+        self.setMinimumWidth(440)
         self.setModal(True)
         self._build_ui()
+        if task:
+            self._populate(task)
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 20)
-        layout.setSpacing(16)
+        layout.setSpacing(14)
 
-        self.setStyleSheet(f"QDialog {{ background: {COLORS['bg_secondary']}; }}")
+        self.setStyleSheet(f"""
+            QDialog {{ background: {COLORS['bg_secondary']}; }}
+            QLabel {{ color: {COLORS['text_secondary']}; font-size: 13px;
+                      background: transparent; border: none; }}
+        """)
 
         form = QFormLayout()
         form.setSpacing(12)
+        form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self._type_combo = QComboBox()
         for t in TaskType:
@@ -510,11 +774,6 @@ class TaskDialog(QDialog):
         self._title_input.setPlaceholderText("Task başlığı")
         form.addRow("Başlık *", self._title_input)
 
-        self._desc_input = QTextEdit()
-        self._desc_input.setPlaceholderText("Açıklama...")
-        self._desc_input.setMaximumHeight(80)
-        form.addRow("Açıklama", self._desc_input)
-
         self._status_combo = QComboBox()
         for s in TaskStatus:
             self._status_combo.addItem(s.label(), s.value)
@@ -522,21 +781,146 @@ class TaskDialog(QDialog):
 
         layout.addLayout(form)
 
+        # ── Todo listesi editörü ─────────────────────────────────────────────
+        todo_header = QLabel("Görev Listesi")
+        todo_header.setStyleSheet(
+            f"color: {COLORS['text_primary']}; font-size: 13px; font-weight: 600;"
+            f"background: transparent; border: none;"
+        )
+        layout.addWidget(todo_header)
+
+        # Kapsayıcı frame
+        self._todo_frame = QFrame()
+        self._todo_frame.setStyleSheet(f"""
+            QFrame {{
+                background: {COLORS['bg_input']};
+                border: 1px solid {COLORS['border']};
+                border-radius: 6px;
+            }}
+        """)
+        self._todo_frame_lay = QVBoxLayout(self._todo_frame)
+        self._todo_frame_lay.setContentsMargins(10, 8, 10, 8)
+        self._todo_frame_lay.setSpacing(4)
+
+        # Giriş satırı
+        input_row = QWidget()
+        input_row.setStyleSheet("background: transparent;")
+        input_lay = QHBoxLayout(input_row)
+        input_lay.setContentsMargins(0, 0, 0, 0)
+        input_lay.setSpacing(8)
+
+        self._todo_input = QLineEdit()
+        self._todo_input.setPlaceholderText("Yeni görev yaz, Enter'a bas...")
+        self._todo_input.setStyleSheet(
+            f"background: {COLORS['bg_secondary']}; color: {COLORS['text_primary']};"
+            f"border: 1px solid {COLORS['border']}; border-radius: 4px;"
+            f"padding: 4px 8px; font-size: 12px;"
+        )
+        self._todo_input.returnPressed.connect(self._add_todo_item)
+        input_lay.addWidget(self._todo_input, stretch=1)
+
+        add_btn = QPushButton("Ekle")
+        add_btn.setObjectName("btn_flat")
+        add_btn.setCursor(Qt.PointingHandCursor)
+        add_btn.clicked.connect(self._add_todo_item)
+        input_lay.addWidget(add_btn)
+
+        self._todo_frame_lay.addWidget(input_row)
+
+        # Todo öğe listesi
+        self._todo_list_widget = QWidget()
+        self._todo_list_widget.setStyleSheet("background: transparent;")
+        self._todo_list_lay = QVBoxLayout(self._todo_list_widget)
+        self._todo_list_lay.setContentsMargins(0, 0, 0, 0)
+        self._todo_list_lay.setSpacing(2)
+        self._todo_frame_lay.addWidget(self._todo_list_widget)
+
+        self._render_todo_items()
+
+        layout.addWidget(self._todo_frame)
+
+        # ── Butonlar ─────────────────────────────────────────────────────────
         btn_row = QHBoxLayout()
         btn_row.addStretch()
         cancel = QPushButton("İptal")
         cancel.setObjectName("btn_flat")
         cancel.clicked.connect(self.reject)
         btn_row.addWidget(cancel)
-        save = QPushButton("Ekle")
-        save.clicked.connect(self.accept)
+        save = QPushButton("Ekle" if not self._task else "Kaydet")
+        save.clicked.connect(self._on_accept)
         btn_row.addWidget(save)
         layout.addLayout(btn_row)
+
+    def _populate(self, task) -> None:
+        idx = self._type_combo.findData(task.type.value)
+        if idx >= 0:
+            self._type_combo.setCurrentIndex(idx)
+        self._title_input.setText(task.title)
+        idx2 = self._status_combo.findData(task.status.value)
+        if idx2 >= 0:
+            self._status_combo.setCurrentIndex(idx2)
+
+    def _render_todo_items(self) -> None:
+        while self._todo_list_lay.count():
+            item = self._todo_list_lay.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+        for idx, todo in enumerate(self._todos):
+            row = QWidget()
+            row.setStyleSheet("background: transparent;")
+            r_lay = QHBoxLayout(row)
+            r_lay.setContentsMargins(0, 0, 0, 0)
+            r_lay.setSpacing(6)
+
+            bullet = QLabel("•")
+            bullet.setFixedWidth(12)
+            bullet.setStyleSheet(
+                f"color: {COLORS['accent_blue']}; font-size: 14px;"
+                f"background: transparent; border: none;"
+            )
+            r_lay.addWidget(bullet)
+
+            lbl = QLabel(todo["text"])
+            lbl.setStyleSheet(
+                f"color: {COLORS['text_primary']}; font-size: 12px;"
+                f"background: transparent; border: none;"
+            )
+            lbl.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            r_lay.addWidget(lbl, stretch=1)
+
+            del_btn = QPushButton("✕")
+            del_btn.setObjectName("btn_icon")
+            del_btn.setCursor(Qt.PointingHandCursor)
+            del_btn.setFixedSize(20, 20)
+            del_btn.clicked.connect(lambda checked=False, i=idx: self._remove_todo_item(i))
+            r_lay.addWidget(del_btn)
+
+            self._todo_list_lay.addWidget(row)
+
+    def _add_todo_item(self) -> None:
+        text = self._todo_input.text().strip()
+        if not text:
+            return
+        self._todos.append({"text": text, "done": False})
+        self._todo_input.clear()
+        self._render_todo_items()
+
+    def _remove_todo_item(self, idx: int) -> None:
+        if 0 <= idx < len(self._todos):
+            del self._todos[idx]
+            self._render_todo_items()
+
+    def _on_accept(self) -> None:
+        if not self._title_input.text().strip():
+            self._title_input.setFocus()
+            return
+        self.accept()
 
     def get_data(self) -> dict:
         return {
             "type":        self._type_combo.currentData(),
-            "title":       self._title_input.text(),
-            "description": self._desc_input.toPlainText(),
+            "title":       self._title_input.text().strip(),
+            "description": todos_to_json(self._todos),
             "status":      self._status_combo.currentData(),
         }
