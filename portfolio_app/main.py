@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtCore import Qt
 
 from config import get_db_path, APP_NAME, APP_VERSION, ADMIN_KEY_SEQUENCE
 from infrastructure.database.db_manager import DBManager
@@ -32,7 +31,7 @@ def main() -> None:
     app.setApplicationName(APP_NAME)
     app.setApplicationVersion(APP_VERSION)
 
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    # AA_UseHighDpiPixmaps PySide6 6.x'te varsayılan olarak açık, setAttribute gerekmiyor
 
     try:
         stylesheet = ThemeEngine.get_full_stylesheet()
