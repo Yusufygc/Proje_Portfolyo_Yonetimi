@@ -22,6 +22,7 @@ class AdminSidebar(QWidget):
     PAGES = [
         ("dashboard",     "Dashboard",       "D"),
         ("projects",      "Projeler",        "P"),
+        ("skills",        "Beceriler",       "B"),
         ("personal_info", "Kişisel Bilgi",   "K"),
         ("certificates",  "Sertifikalar",    "S"),
         ("resources",     "Kaynaklar",       "R"),

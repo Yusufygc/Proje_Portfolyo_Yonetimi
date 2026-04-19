@@ -9,6 +9,7 @@ from presentation.admin.pages.projects_page import ProjectsPage
 from presentation.admin.pages.personal_info_page import PersonalInfoPage
 from presentation.admin.pages.certificates_page import CertificatesPage
 from presentation.admin.pages.resources_page import ResourcesPage
+from presentation.admin.pages.skills_page import SkillsPage
 from styles.constants import COLORS
 from di_container import DIContainer
 
@@ -47,6 +48,7 @@ class AdminPanel(QWidget):
             "personal_info": PersonalInfoPage(c.personal_info_controller),
             "certificates":  CertificatesPage(c.certificate_controller),
             "resources":     ResourcesPage(c.resource_controller),
+            "skills":        SkillsPage(c.skill_controller),
         }
         for page in self._pages.values():
             self._stack.addWidget(page)
