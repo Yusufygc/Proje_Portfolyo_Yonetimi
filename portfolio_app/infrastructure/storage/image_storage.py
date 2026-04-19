@@ -30,6 +30,27 @@ class ImageStorage:
         """Sertifika görselini kopyalar; path döner."""
         return self._save(source_path, f"certificates/cert_{cert_id}")
 
+    def save_skill_icon(self, source_path: str) -> str:
+        """Lokalden seçilen yetenek ikonunu kopyalar; path döner."""
+        return self._save(source_path, "skills")
+
+    def save_skill_icon_from_bytes(self, icon_data: bytes, ext: str, skill_name: str) -> str:
+        """İndirilen yetenek ikonunu (bytes) kaydeder; path döner."""
+        dest_dir = os.path.join(self._base_dir, "skills")
+        os.makedirs(dest_dir, exist_ok=True)
+        import time
+        import re
+        from config import get_data_path
+        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', skill_name.lower())
+        filename = f"{safe_name}_{int(time.time())}{ext}"
+        dest_path = os.path.join(dest_dir, filename)
+        
+        with open(dest_path, "wb") as f:
+            f.write(icon_data)
+            
+        logger.info(f"Yetenek ikonu kaydedildi (internet): {dest_path}")
+        return os.path.relpath(dest_path, get_data_path())
+
     def delete(self, stored_path: str) -> None:
         """Görsel dosyasını siler (relatif veya mutlak path kabul eder)."""
         full_path = self._full_path(stored_path)
