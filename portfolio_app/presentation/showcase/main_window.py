@@ -9,6 +9,7 @@ from controllers.showcase_controller import ShowcaseController
 from presentation.showcase.navbar import ShowcaseNavbar
 from presentation.showcase.sections.about_section import AboutSection
 from presentation.showcase.sections.projects_section import ProjectsSection
+from presentation.showcase.sections.skills_section import SkillsSection
 from presentation.showcase.sections.vision_section import VisionSection
 from presentation.showcase.sections.certificates_section import CertificatesSection
 from presentation.admin.admin_window import AdminPanel
@@ -87,11 +88,13 @@ class ShowcaseWindow(QMainWindow):
         content_layout.setSpacing(0)
 
         self._about_section    = AboutSection()
+        self._skills_section   = SkillsSection()
         self._projects_section = ProjectsSection()
         self._vision_section   = VisionSection()
         self._certs_section    = CertificatesSection()
 
         content_layout.addWidget(self._about_section)
+        content_layout.addWidget(self._skills_section)
         content_layout.addWidget(self._projects_section)
         content_layout.addWidget(self._vision_section)
         content_layout.addWidget(self._certs_section)
@@ -100,6 +103,7 @@ class ShowcaseWindow(QMainWindow):
 
         self._sections = {
             "about":        self._about_section,
+            "skills":       self._skills_section,
             "projects":     self._projects_section,
             "vision":       self._vision_section,
             "certificates": self._certs_section,
@@ -123,10 +127,12 @@ class ShowcaseWindow(QMainWindow):
 
     def _load_data(self) -> None:
         info     = self._controller.get_personal_info()
+        skills   = self._controller.get_skills()
         projects = self._controller.get_all_projects()
         certs    = self._controller.get_certificates()
 
         self._about_section.load_data(info)
+        self._skills_section.load_data(skills)
         self._projects_section.load_data(projects)
         self._vision_section.load_data(info)
         self._certs_section.load_data(certs)

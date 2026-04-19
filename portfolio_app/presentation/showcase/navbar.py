@@ -15,6 +15,7 @@ class ShowcaseNavbar(QWidget):
 
     SECTIONS = [
         ("about",        "Hakkımda"),
+        ("skills",       "Yeteneklerim"),
         ("projects",     "Projelerim"),
         ("vision",       "Vizyon & Misyon"),
         ("certificates", "Sertifikalarım"),
