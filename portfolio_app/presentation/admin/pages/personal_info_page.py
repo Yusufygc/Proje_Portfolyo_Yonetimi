@@ -86,6 +86,8 @@ class PersonalInfoPage(QWidget):
         self._vision_input.setMaximumHeight(100)
         self._mission_input  = QTextEdit()
         self._mission_input.setMaximumHeight(100)
+        self._hobbies_input  = QLineEdit()
+        self._hobbies_input.setPlaceholderText("Hobi1, Hobi2, Hobi3...")
 
         fields = [
             ("Ad Soyad *",   self._name_input),
@@ -97,6 +99,7 @@ class PersonalInfoPage(QWidget):
             ("E-posta",      self._email_input),
             ("Vizyonum",     self._vision_input),
             ("Misyonum",     self._mission_input),
+            ("Hobilerim",    self._hobbies_input),
         ]
         for label, widget in fields:
             form.addRow(label, widget)
@@ -136,6 +139,7 @@ class PersonalInfoPage(QWidget):
         self._email_input.setText(info.email or "")
         self._vision_input.setPlainText(info.vision_text)
         self._mission_input.setPlainText(info.mission_text)
+        self._hobbies_input.setText(info.hobbies)
 
         if info.avatar_path:
             full = os.path.join(get_data_path(), info.avatar_path)
@@ -163,6 +167,7 @@ class PersonalInfoPage(QWidget):
             "email":        self._email_input.text(),
             "vision_text":  self._vision_input.toPlainText(),
             "mission_text": self._mission_input.toPlainText(),
+            "hobbies":      self._hobbies_input.text(),
         }
         if self._avatar_source_path:
             data["avatar_source_path"] = self._avatar_source_path

@@ -88,6 +88,17 @@ class AboutSection(QWidget):
         """)
         text_col.addWidget(self._bio_label)
 
+        # Hobiler
+        self._hobbies_label = QLabel("")
+        self._hobbies_label.setWordWrap(True)
+        self._hobbies_label.setMaximumWidth(480)
+        self._hobbies_label.setStyleSheet(f"""
+            color: {COLORS['text_muted']};
+            font-size: 13px;
+            margin-top: 8px;
+        """)
+        text_col.addWidget(self._hobbies_label)
+
         # Butonlar
         links_row = QHBoxLayout()
         links_row.setSpacing(12)
@@ -155,6 +166,12 @@ class AboutSection(QWidget):
         self._name_label.setText(info.full_name or "Ad Soyad")
         self._title_label.setText(info.title or "Geliştirici")
         self._bio_label.setText(info.bio or "")
+        
+        if info.hobbies:
+            self._hobbies_label.setText(f"Hobilerim: {info.hobbies}")
+            self._hobbies_label.setVisible(True)
+        else:
+            self._hobbies_label.setVisible(False)
 
         # Avatar
         if info.avatar_path:
