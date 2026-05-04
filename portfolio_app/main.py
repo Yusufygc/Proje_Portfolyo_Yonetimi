@@ -20,8 +20,10 @@ from config import get_db_path, APP_NAME, APP_VERSION, ADMIN_KEY_SEQUENCE
 from infrastructure.database.db_manager import DBManager
 from infrastructure.logger import setup_logger
 from styles.theme_engine import ThemeEngine
+from styles.theme_manager import ThemeManager
 from di_container import DIContainer
 from presentation.showcase.main_window import ShowcaseWindow
+from styles.constants import COLORS
 
 logger = setup_logger("main")
 
@@ -32,6 +34,9 @@ def main() -> None:
     app.setApplicationVersion(APP_VERSION)
 
     # AA_UseHighDpiPixmaps PySide6 6.x'te varsayılan olarak açık, setAttribute gerekmiyor
+
+    # Kayıtlı temayı yükle
+    ThemeManager.load_saved_theme()
 
     try:
         stylesheet = ThemeEngine.get_full_stylesheet()
