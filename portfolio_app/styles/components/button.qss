@@ -1,54 +1,54 @@
-/* button.qss */
+/* button.qss — Dinamik tema uyumlu */
 
 QPushButton {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #5AADFF, stop:1 #4A9EFF);
-    color: #FFFFFF;
+    background: {{COLOR_ACCENT_BLUE}};
+    color: {{COLOR_WHITE}};
     border: none;
-    border-radius: 8px;
-    padding: 8px 20px;
-    font-size: 14px;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 13px;
     font-weight: 600;
-    min-height: 36px;
+    min-height: 30px;
 }
 
 QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #6ABDFF, stop:1 #5AADFF);
+    background: {{COLOR_ACCENT_BLUE_DARK}};
 }
 
 QPushButton:pressed {
-    background: #2D7DD2;
+    background: {{COLOR_ACCENT_BLUE}};
 }
 
 QPushButton:disabled {
-    background: #243447;
-    color: #4A5C6E;
+    background: {{COLOR_BG_ACTIVE}};
+    color: {{COLOR_TEXT_MUTED}};
 }
 
 QPushButton[flat="true"],
 QPushButton#btn_flat {
     background: transparent;
-    border: 1px solid #4A9EFF;
-    color: #4A9EFF;
+    border: 1px solid {{COLOR_BORDER}};
+    color: {{COLOR_TEXT_SECONDARY}};
 }
 
 QPushButton[flat="true"]:hover,
 QPushButton#btn_flat:hover {
-    background: rgba(74, 158, 255, 0.1);
+    border-color: {{COLOR_ACCENT_BLUE}};
+    color: {{COLOR_ACCENT_BLUE}};
+    background: rgba(47, 129, 247, 0.08);
 }
 
 QPushButton#btn_danger {
-    background: #EF4444;
+    background: {{COLOR_ERROR}};
     color: white;
 }
 
 QPushButton#btn_danger:hover {
-    background: #DC2626;
+    background: {{COLOR_ERROR_DARK}};
 }
 
 QPushButton#btn_success {
-    background: #4CAF7D;
+    background: {{COLOR_SUCCESS}};
     color: white;
 }
 
@@ -56,11 +56,11 @@ QPushButton#btn_icon {
     background: transparent;
     border: none;
     border-radius: 6px;
-    padding: 6px;
-    min-width: 32px;
-    min-height: 32px;
+    padding: 4px;
+    min-width: 28px;
+    min-height: 28px;
 }
 
 QPushButton#btn_icon:hover {
-    background: rgba(74, 158, 255, 0.15);
+    background: rgba(47, 129, 247, 0.15);
 }

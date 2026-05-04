@@ -1,10 +1,12 @@
 """presentation/showcase/navbar.py — Sabit vitrin navbar'ı."""
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import Qt, Signal, QEvent
+from PySide6.QtCore import Qt, Signal, QEvent, QSize
 from PySide6.QtGui import QFont
 
 from styles.constants import COLORS, FONTS
+from resources.icon_manager import IconManager, Icons
+from styles.theme_manager import ThemeManager
 
 
 class ShowcaseNavbar(QWidget):
@@ -36,9 +38,9 @@ class ShowcaseNavbar(QWidget):
         # İmleç değişmeden (ArrowCursor) tıklanabilir — event filter ile
         self._brand = QLabel()
         self._brand.setObjectName("nav_brand")
-        self._brand.setText('<span style="color:#2F81F7;font-weight:700;letter-spacing:2px;">M</span>'
-                            '<span style="color:#E6EDF3;font-weight:700;letter-spacing:2px;">Y</span>'
-                            '<span style="color:#2F81F7;font-weight:700;letter-spacing:2px;">Y</span>')
+        self._brand.setText(f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">M</span>'
+                            f'<span style="color:{COLORS["text_primary"]};font-weight:700;letter-spacing:2px;">Y</span>'
+                            f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">Y</span>')
         self._brand.setTextFormat(Qt.RichText)
         self._brand.setCursor(Qt.ArrowCursor)   # imleç değişmesin
         self._brand.installEventFilter(self)
@@ -55,30 +57,43 @@ class ShowcaseNavbar(QWidget):
             btn.clicked.connect(lambda _, sid=section_id: self.scroll_requested.emit(sid))
             layout.addWidget(btn)
 
-        self.setStyleSheet("""
-            QWidget#navbar {
-                background: rgba(13, 17, 23, 0.95);
-                border-bottom: 1px solid #30363D;
-            }
-            QLabel#nav_brand {
-                border: 1px solid #30363D;
+        # Tema değiştirme butonu
+        layout.addSpacing(32)
+        is_dark = ThemeManager.get_current_theme().name == "dark"
+        theme_icon = Icons.SUN if is_dark else Icons.MOON
+        self._theme_btn = QPushButton("")
+        self._theme_btn.setIcon(IconManager.get(theme_icon))
+        self._theme_btn.setIconSize(QSize(20, 20))
+        self._theme_btn.setObjectName("theme_btn")
+        self._theme_btn.setCursor(Qt.PointingHandCursor)
+        self._theme_btn.setToolTip("Temayı Değiştir (Restart)")
+        self._theme_btn.clicked.connect(ThemeManager.toggle_theme_and_restart)
+        layout.addWidget(self._theme_btn)
+
+        self.setStyleSheet(f"""
+            QWidget#navbar {{
+                background: {COLORS['bg_primary']};
+                border-bottom: 1px solid {COLORS['border']};
+            }}
+            QLabel#nav_brand {{
+                border: 1px solid {COLORS['border']};
                 border-radius: 6px;
                 padding: 6px 10px;
                 font-size: 18px;
-            }
-            QPushButton#nav_btn {
+            }}
+            QPushButton#nav_btn, QPushButton#theme_btn {{
                 background: transparent;
                 border: none;
                 border-bottom: 1px solid transparent;
-                color: #FFFFFF;
+                color: {COLORS['text_primary']};
                 font-size: 16px;
                 font-weight: 500;
                 padding: 8px 4px;
-            }
-            QPushButton#nav_btn:hover {
-                color: #2F81F7;
-                border-bottom: 1px solid #2F81F7;
-            }
+            }}
+            QPushButton#nav_btn:hover, QPushButton#theme_btn:hover {{
+                color: {COLORS['accent_blue']};
+                border-bottom: 1px solid {COLORS['accent_blue']};
+            }}
         """)
 
     # ── Event filter — logo tıklaması ────────────────────────────────────────

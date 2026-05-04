@@ -3,9 +3,11 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy
 )
-from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, QSize
 from PySide6.QtGui import QFont
 
+from resources.icon_manager import IconManager, Icons
+from styles.theme_manager import ThemeManager
 from styles.constants import COLORS, FONTS
 from config import SIDEBAR_WIDTH_EXPANDED, SIDEBAR_WIDTH_COLLAPSED, ANIMATION_DURATION_MS
 
@@ -20,12 +22,13 @@ class AdminSidebar(QWidget):
     page_requested = Signal(str)  # page_id
 
     PAGES = [
-        ("dashboard",     "Dashboard",       "D"),
-        ("projects",      "Projeler",        "P"),
-        ("skills",        "Beceriler",       "B"),
-        ("personal_info", "Kişisel Bilgi",   "K"),
-        ("certificates",  "Sertifikalar",    "S"),
-        ("resources",     "Kaynaklar",       "R"),
+        ("dashboard",     "Dashboard",       Icons.DASHBOARD),
+        ("projects",      "Projeler",        Icons.PROJECTS),
+        ("skills",        "Beceriler",       Icons.TASK),
+        ("personal_info", "Kişisel Bilgi",   Icons.PERSON),
+        ("certificates",  "Sertifikalar",    Icons.CERTIFICATE),
+        ("resources",     "Kaynaklar",       Icons.RESOURCES),
+        ("settings",      "Ayarlar",         Icons.SETTINGS),
     ]
 
     def __init__(self, parent=None):
@@ -40,8 +43,7 @@ class AdminSidebar(QWidget):
     def _build_ui(self) -> None:
         self.setStyleSheet(f"""
             QWidget#sidebar {{
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #0D1620, stop:1 #0F1923);
+                background-color: {COLORS['bg_sidebar']};
                 border-right: 1px solid {COLORS['border']};
             }}
         """)
@@ -65,7 +67,9 @@ class AdminSidebar(QWidget):
         top_row.addWidget(self._logo)
         top_row.addStretch()
 
-        toggle_btn = QPushButton("☰")
+        toggle_btn = QPushButton("")
+        toggle_btn.setIcon(IconManager.get(Icons.MENU))
+        toggle_btn.setIconSize(QSize(20, 20))
         toggle_btn.setObjectName("sidebar_toggle")
         toggle_btn.setCursor(Qt.PointingHandCursor)
         toggle_btn.setFixedSize(32, 32)
@@ -86,15 +90,43 @@ class AdminSidebar(QWidget):
         layout.addSpacing(16)
 
         # Sayfa butonları
-        for page_id, label, icon_char in self.PAGES:
-            btn = self._make_page_btn(page_id, label, icon_char)
+        for page_id, label, icon_name in self.PAGES:
+            btn = self._make_page_btn(page_id, label, icon_name)
             self._page_btns[page_id] = btn
             layout.addWidget(btn)
 
         layout.addStretch()
 
+        # Tema Değiştirme Butonu
+        is_dark = ThemeManager.get_current_theme().name == "dark"
+        theme_icon = Icons.SUN if is_dark else Icons.MOON
+        theme_label = " Light Mode" if is_dark else " Dark Mode"
+        
+        self._theme_btn = QPushButton(theme_label)
+        self._theme_btn.setIcon(IconManager.get(theme_icon))
+        self._theme_btn.setIconSize(QSize(20, 20))
+        self._theme_btn.setObjectName("sidebar_btn")
+        self._theme_btn.setCursor(Qt.PointingHandCursor)
+        self._theme_btn.setToolTip("Temayı Değiştir (Restart)")
+        self._theme_btn.setStyleSheet(f"""
+            QPushButton {{
+                background: transparent;
+                border: none;
+                border-radius: 8px;
+                color: {COLORS['text_secondary']};
+                font-size: 13px;
+                text-align: left;
+                padding: 10px 12px;
+            }}
+            QPushButton:hover {{ color: {COLORS['text_primary']}; background: rgba(74,158,255,0.05); }}
+        """)
+        self._theme_btn.clicked.connect(ThemeManager.toggle_theme_and_restart)
+        layout.addWidget(self._theme_btn)
+
         # Geri butonu (vitrine dön)
-        self._back_btn = QPushButton("← Vitrine Dön")
+        self._back_btn = QPushButton(" Vitrine Dön")
+        self._back_btn.setIcon(IconManager.get(Icons.BACK))
+        self._back_btn.setIconSize(QSize(20, 20))
         self._back_btn.setObjectName("sidebar_btn")
         self._back_btn.setCursor(Qt.PointingHandCursor)
         self._back_btn.setToolTip("Vitrine Dön")
@@ -115,8 +147,10 @@ class AdminSidebar(QWidget):
 
         self._set_active(self._current_page)
 
-    def _make_page_btn(self, page_id: str, label: str, icon_char: str) -> QPushButton:
-        btn = QPushButton(f"   {label}")
+    def _make_page_btn(self, page_id: str, label: str, icon_name: str) -> QPushButton:
+        btn = QPushButton(f" {label}")
+        btn.setIcon(IconManager.get(icon_name))
+        btn.setIconSize(QSize(20, 20))
         btn.setObjectName("sidebar_btn")
         btn.setCursor(Qt.PointingHandCursor)
         btn.setCheckable(False)
@@ -140,7 +174,7 @@ class AdminSidebar(QWidget):
             padding = "10px 12px"
             align   = "left"
         else:
-            padding = "10px 4px"
+            padding = "10px 0px"
             align   = "center"
 
         if active:
@@ -197,17 +231,20 @@ class AdminSidebar(QWidget):
         self._update_btn_labels()
 
     def _update_btn_labels(self) -> None:
-        """Genisletilmis: tam yazi. Daraltilmis: sadece ikon harfi."""
-        for (page_id, label, icon_char), btn in zip(self.PAGES, self._page_btns.values()):
+        """Genisletilmis: tam yazi. Daraltilmis: sadece ikon."""
+        for (page_id, label, icon_name), btn in zip(self.PAGES, self._page_btns.values()):
             if self._expanded:
-                btn.setText(f"   {label}")
+                btn.setText(f" {label}")
             else:
-                btn.setText(icon_char)
+                btn.setText("")
 
         # Stil de guncellenmeli (padding/hizalama degisiyor)
         self._set_active(self._current_page)
 
         if self._expanded:
-            self._back_btn.setText("← Vitrine Dön")
+            self._back_btn.setText(" Vitrine Dön")
+            is_dark = ThemeManager.get_current_theme().name == "dark"
+            self._theme_btn.setText(" Light Mode" if is_dark else " Dark Mode")
         else:
-            self._back_btn.setText("←")
+            self._back_btn.setText("")
+            self._theme_btn.setText("")

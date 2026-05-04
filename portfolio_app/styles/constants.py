@@ -3,53 +3,29 @@ styles/constants.py — Tüm renk, font, spacing sabitleri.
 Widget'larda hardcode renk YASAK — buradan al.
 """
 
-COLORS = {
-    # Arka planlar — GitHub dark tema
-    "bg_primary":    "#0D1117",
-    "bg_secondary":  "#161B22",
-    "bg_card":       "#161B22",
-    "bg_glass":      "rgba(22, 27, 34, 0.7)",
-    "bg_input":      "#0D1117",
-    "bg_hover":      "#1C2128",
-    "bg_active":     "#21262D",
+from styles.theme_manager import ThemeManager
 
-    # Renk paleti
-    "accent_blue":   "#2F81F7",
-    "accent_blue_dark": "#388BFD",
-    "accent_silver": "#B0BEC5",
-    "text_primary":  "#E6EDF3",
-    "text_secondary": "#8B949E",
-    "text_muted":    "#484F58",
-    "white":         "#FFFFFF",
+class ActiveThemeProxy:
+    """
+    Tüm arayüzlerin COLORS['key'] şeklinde kullandığı yapıya dinamik yanıt verir.
+    Tema değiştiğinde otomatik olarak güncel rengi döndürür.
+    """
+    def __getitem__(self, key: str) -> str:
+        return ThemeManager.get_color(key)
+        
+    def get(self, key: str, default: str = None) -> str:
+        color = ThemeManager.get_color(key)
+        if color == "#FF00FF":  # theme_manager'daki fallback rengi ise
+            return default if default is not None else color
+        return color
 
-    # Border
-    "border":        "#30363D",
-    "border_light":  "#21262D",
-    "border_focus":  "#2F81F7",
+    def items(self):
+        return ThemeManager.get_current_theme().colors.items()
 
-    # Gradyanlar (vitrin bölüm geçişleri)
-    "grad_about":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0D1117, stop:1 #161B22)",
-    "grad_projects": "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #161B22, stop:1 #0D1117)",
-    "grad_vision":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0D1117, stop:1 #161B22)",
-    "grad_certs":    "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #161B22, stop:1 #0D1117)",
-    "grad_hero":     "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0D1117, stop:0.5 #161B22, stop:1 #0D1117)",
-    "grad_button":   "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #388BFD, stop:1 #2F81F7)",
-    "grad_sidebar":  "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0D1117, stop:1 #161B22)",
+    def get_dict(self) -> dict:
+        return ThemeManager.get_current_theme().colors
 
-    # Durum renkleri
-    "success":       "#3FB950",
-    "success_dark":  "#2EA043",
-    "warning":       "#D29922",
-    "warning_dark":  "#BB8009",
-    "error":         "#EF4444",
-    "error_dark":    "#DC2626",
-    "info":          "#2F81F7",
-
-    # Tag / chip renkleri
-    "tag_bg":        "rgba(47, 129, 247, 0.1)",
-    "tag_border":    "rgba(47, 129, 247, 0.3)",
-    "tag_text":      "#79C0FF",
-}
+COLORS = ActiveThemeProxy()
 
 FONTS = {
     "family_primary": "Segoe UI",

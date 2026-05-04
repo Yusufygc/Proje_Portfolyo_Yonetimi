@@ -1,40 +1,40 @@
-/* navbar.qss */
+/* navbar.qss — Dinamik tema uyumlu */
 
 QWidget#navbar {
-    background: rgba(15, 25, 35, 0.95);
-    border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+    background: {{COLOR_BG_PRIMARY}};
+    border-bottom: 1px solid {{COLOR_BORDER}};
     min-height: 64px;
     max-height: 64px;
 }
 
-QPushButton#nav_btn {
+QPushButton#nav_btn, QPushButton#theme_btn {
     background: transparent;
     border: none;
-    color: #8CA0B3;
+    color: {{COLOR_TEXT_SECONDARY}};
     font-size: 14px;
     font-weight: 500;
     padding: 8px 16px;
     border-radius: 6px;
 }
 
-QPushButton#nav_btn:hover {
-    color: #4A9EFF;
-    background: rgba(74, 158, 255, 0.08);
+QPushButton#nav_btn:hover, QPushButton#theme_btn:hover {
+    color: {{COLOR_ACCENT_BLUE}};
+    background: rgba(47, 129, 247, 0.08);
 }
 
 QPushButton#nav_btn[active="true"] {
-    color: #4A9EFF;
+    color: {{COLOR_ACCENT_BLUE}};
 }
 
 QLabel#nav_brand {
-    color: #4A9EFF;
+    color: {{COLOR_ACCENT_BLUE}};
     font-size: 20px;
     font-weight: 700;
     letter-spacing: 1px;
 }
 
 QLabel#nav_title {
-    color: #E8EDF2;
+    color: {{COLOR_TEXT_PRIMARY}};
     font-size: 16px;
     font-weight: 600;
 }

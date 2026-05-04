@@ -17,24 +17,17 @@ class ThemeEngine:
     @classmethod
     def load_theme(cls, theme_name: str = "silver_blue") -> str:
         """Ana tema QSS'ini döner."""
-        if theme_name in cls._cache:
-            return cls._cache[theme_name]
         path = get_resource_path(f"styles/themes/{theme_name}.qss")
         qss = cls._load_file(path)
         qss = cls._inject_variables(qss)
-        cls._cache[theme_name] = qss
         return qss
 
     @classmethod
     def load_component(cls, component_name: str) -> str:
         """Bileşen QSS'ini döner (button, card, sidebar, navbar)."""
-        key = f"component_{component_name}"
-        if key in cls._cache:
-            return cls._cache[key]
         path = get_resource_path(f"styles/components/{component_name}.qss")
         qss = cls._load_file(path)
         qss = cls._inject_variables(qss)
-        cls._cache[key] = qss
         return qss
 
     @classmethod

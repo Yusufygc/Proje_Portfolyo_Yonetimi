@@ -1,14 +1,14 @@
-/* silver_blue.qss — Ana tema */
+/* silver_blue.qss — Ana tema (dinamik renk enjeksiyonlu) */
 
 QWidget {
-    background-color: #0F1923;
-    color: #E8EDF2;
+    background-color: {{COLOR_BG_PRIMARY}};
+    color: {{COLOR_TEXT_PRIMARY}};
     font-family: "Segoe UI";
     font-size: 14px;
 }
 
 QMainWindow {
-    background-color: #0F1923;
+    background-color: {{COLOR_BG_PRIMARY}};
 }
 
 QScrollArea {
@@ -17,13 +17,13 @@ QScrollArea {
 }
 
 QScrollBar:vertical {
-    background: #162030;
+    background: {{COLOR_BG_SECONDARY}};
     width: 6px;
     border-radius: 3px;
 }
 
 QScrollBar::handle:vertical {
-    background: #4A9EFF;
+    background: {{COLOR_ACCENT_BLUE}};
     border-radius: 3px;
     min-height: 40px;
 }
@@ -34,46 +34,46 @@ QScrollBar::sub-line:vertical {
 }
 
 QScrollBar:horizontal {
-    background: #162030;
+    background: {{COLOR_BG_SECONDARY}};
     height: 6px;
     border-radius: 3px;
 }
 
 QScrollBar::handle:horizontal {
-    background: #4A9EFF;
+    background: {{COLOR_ACCENT_BLUE}};
     border-radius: 3px;
 }
 
 QLabel {
     background: transparent;
-    color: #E8EDF2;
+    color: {{COLOR_TEXT_PRIMARY}};
 }
 
 QLineEdit, QTextEdit, QPlainTextEdit {
-    background-color: #1A2535;
-    border: 1px solid #243447;
+    background-color: {{COLOR_BG_INPUT}};
+    border: 1px solid {{COLOR_BORDER}};
     border-radius: 8px;
     padding: 8px 12px;
-    color: #E8EDF2;
+    color: {{COLOR_TEXT_PRIMARY}};
     font-size: 14px;
-    selection-background-color: #4A9EFF;
+    selection-background-color: {{COLOR_ACCENT_BLUE}};
 }
 
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
-    border-color: #4A9EFF;
+    border-color: {{COLOR_ACCENT_BLUE}};
 }
 
 QComboBox {
-    background-color: #1A2535;
-    border: 1px solid #243447;
+    background-color: {{COLOR_BG_INPUT}};
+    border: 1px solid {{COLOR_BORDER}};
     border-radius: 8px;
     padding: 8px 12px;
-    color: #E8EDF2;
+    color: {{COLOR_TEXT_PRIMARY}};
     font-size: 14px;
 }
 
 QComboBox:focus {
-    border-color: #4A9EFF;
+    border-color: {{COLOR_ACCENT_BLUE}};
 }
 
 QComboBox::drop-down {
@@ -82,73 +82,86 @@ QComboBox::drop-down {
 }
 
 QComboBox QAbstractItemView {
-    background-color: #1C2A3A;
-    border: 1px solid #243447;
-    selection-background-color: #4A9EFF;
-    color: #E8EDF2;
+    background-color: {{COLOR_BG_SECONDARY}};
+    border: 1px solid {{COLOR_BORDER}};
+    selection-background-color: {{COLOR_ACCENT_BLUE}};
+    color: {{COLOR_TEXT_PRIMARY}};
     outline: none;
 }
 
 QCheckBox {
-    color: #E8EDF2;
+    color: {{COLOR_TEXT_PRIMARY}};
     spacing: 8px;
 }
 
 QCheckBox::indicator {
     width: 18px;
     height: 18px;
-    border: 1px solid #243447;
+    border: 1px solid {{COLOR_BORDER}};
     border-radius: 4px;
-    background: #1A2535;
+    background: {{COLOR_BG_INPUT}};
 }
 
 QCheckBox::indicator:checked {
-    background: #4A9EFF;
-    border-color: #4A9EFF;
+    background: {{COLOR_ACCENT_BLUE}};
+    border-color: {{COLOR_ACCENT_BLUE}};
+}
+
+QSpinBox {
+    background-color: {{COLOR_BG_INPUT}};
+    border: 1px solid {{COLOR_BORDER}};
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: {{COLOR_TEXT_PRIMARY}};
+    font-size: 14px;
+}
+
+QSpinBox:focus {
+    border-color: {{COLOR_ACCENT_BLUE}};
 }
 
 QSplitter::handle {
-    background: #243447;
+    background: {{COLOR_BORDER}};
 }
 
 QFrame[frameShape="4"],
 QFrame[frameShape="5"] {
-    color: #243447;
+    color: {{COLOR_BORDER}};
 }
 
 QToolTip {
-    background: #1C2A3A;
-    border: 1px solid #4A9EFF;
-    color: #E8EDF2;
+    background: {{COLOR_BG_SECONDARY}};
+    border: 1px solid {{COLOR_ACCENT_BLUE}};
+    color: {{COLOR_TEXT_PRIMARY}};
     padding: 4px 8px;
     border-radius: 4px;
 }
 
 QMessageBox {
-    background: #162030;
+    background: {{COLOR_BG_SECONDARY}};
 }
 
 QDialog {
-    background: #162030;
+    background: {{COLOR_BG_SECONDARY}};
 }
 
 QTableWidget {
-    background: #1C2A3A;
-    border: 1px solid #243447;
+    background: {{COLOR_BG_SECONDARY}};
+    border: 1px solid {{COLOR_BORDER}};
     border-radius: 8px;
-    gridline-color: #243447;
-    color: #E8EDF2;
+    gridline-color: {{COLOR_BORDER}};
+    color: {{COLOR_TEXT_PRIMARY}};
 }
 
 QTableWidget::item:selected {
-    background: #4A9EFF;
+    background: {{COLOR_ACCENT_BLUE}};
 }
 
 QHeaderView::section {
-    background: #0F1923;
-    color: #8CA0B3;
+    background: {{COLOR_BG_PRIMARY}};
+    color: {{COLOR_TEXT_SECONDARY}};
     border: none;
-    border-bottom: 1px solid #243447;
+    border-bottom: 1px solid {{COLOR_BORDER}};
     padding: 8px;
     font-size: 12px;
 }
