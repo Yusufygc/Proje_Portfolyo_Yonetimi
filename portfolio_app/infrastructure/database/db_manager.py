@@ -97,9 +97,13 @@ class DBManager:
             sql = f.read()
         try:
             self.connection.executescript(sql)
+            self.connection.execute(
+                "INSERT INTO schema_migrations (version) VALUES (?)", (version,)
+            )
             self.connection.commit()
             logger.info(f"Migration uygulandı: {filename}")
         except Exception:
+            self.connection.rollback()
             logger.exception(f"Migration başarısız: {filename}")
             raise
 
