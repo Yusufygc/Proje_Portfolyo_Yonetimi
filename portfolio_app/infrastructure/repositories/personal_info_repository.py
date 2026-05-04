@@ -25,12 +25,12 @@ class PersonalInfoRepository:
                 """UPDATE personal_info SET
                    full_name=?, title=?, bio=?, avatar_path=?,
                    github_url=?, linkedin_url=?, website_url=?, email=?,
-                   vision_text=?, mission_text=?,
+                   vision_text=?, mission_text=?, hobbies=?,
                    updated_at=datetime('now')
                    WHERE id=1""",
                 (info.full_name, info.title, info.bio, info.avatar_path,
                  info.github_url, info.linkedin_url, info.website_url, info.email,
-                 info.vision_text, info.mission_text),
+                 info.vision_text, info.mission_text, info.hobbies),
             )
             logger.info("Kişisel bilgi güncellendi.")
             return info
@@ -52,5 +52,6 @@ class PersonalInfoRepository:
             email=row["email"],
             vision_text=row["vision_text"] or "",
             mission_text=row["mission_text"] or "",
+            hobbies=row["hobbies"] or "",
             updated_at=row["updated_at"] or "",
         )

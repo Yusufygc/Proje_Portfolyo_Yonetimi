@@ -29,6 +29,7 @@ class PersonalInfoService(IPersonalInfoService):
         info.email = data.get("email") or None
         info.vision_text = data.get("vision_text", info.vision_text).strip()
         info.mission_text = data.get("mission_text", info.mission_text).strip()
+        info.hobbies = data.get("hobbies", info.hobbies).strip()
 
         if data.get("avatar_source_path"):
             if info.avatar_path:

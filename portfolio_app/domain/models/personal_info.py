@@ -17,4 +17,5 @@ class PersonalInfo:
     email: Optional[str] = None
     vision_text: str = ""
     mission_text: str = ""
+    hobbies: str = ""
     updated_at: str = ""
