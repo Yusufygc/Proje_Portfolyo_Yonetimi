@@ -5,7 +5,6 @@ import logging
 from PySide6.QtCore import QObject, Signal
 
 from services.resource_service import ResourceService
-from domain.enums.resource_type import ResourceType
 from domain.exceptions.domain_exceptions import DomainException
 
 logger = logging.getLogger(__name__)
@@ -19,14 +18,20 @@ class ResourceController(QObject):
         super().__init__()
         self._service = service
 
-    def get_all(self):
-        return self._service.get_all()
+    def get_all(self, sort_by: str = "created_at", sort_dir: str = "DESC"):
+        return self._service.get_all(sort_by, sort_dir)
 
-    def get_by_type(self, resource_type: ResourceType):
-        return self._service.get_by_type(resource_type)
+    def get_by_type(self, type_name: str):
+        return self._service.get_by_type(type_name)
 
     def get_by_id(self, resource_id: int):
         return self._service.get_by_id(resource_id)
+
+    def search(self, query: str):
+        return self._service.search(query)
+
+    def get_stats(self) -> dict:
+        return self._service.get_stats()
 
     def create(self, data: dict):
         try:
@@ -54,4 +59,19 @@ class ResourceController(QObject):
             self.resources_changed.emit()
         except DomainException as e:
             logger.exception("Kaynak silme hatası")
+            self.error_occurred.emit(str(e))
+
+    def toggle_pin(self, resource_id: int):
+        try:
+            result = self._service.toggle_pin(resource_id)
+            self.resources_changed.emit()
+            return result
+        except DomainException as e:
+            self.error_occurred.emit(str(e))
+
+    def update_progress(self, resource_id: int, progress: int):
+        try:
+            self._service.update_progress(resource_id, progress)
+            self.resources_changed.emit()
+        except DomainException as e:
             self.error_occurred.emit(str(e))
