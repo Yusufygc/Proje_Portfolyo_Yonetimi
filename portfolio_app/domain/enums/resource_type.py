@@ -1,38 +1,12 @@
+"""domain/enums/resource_type.py — Kaynak durum ve öncelik enum'ları."""
+
 from enum import Enum
 
 
-class ResourceType(str, Enum):
-    KURS  = "KURS"
-    VIDEO = "VIDEO"
-    REPO  = "REPO"
-    NOT   = "NOT"
-    PLAN  = "PLAN"
-
-    def label(self) -> str:
-        labels = {
-            self.KURS:  "Kurs",
-            self.VIDEO: "Video",
-            self.REPO:  "Repo",
-            self.NOT:   "Not",
-            self.PLAN:  "Plan",
-        }
-        return labels[self]
-
-    def icon_name(self) -> str:
-        icons = {
-            self.KURS:  "book-open",
-            self.VIDEO: "play-circle",
-            self.REPO:  "code",
-            self.NOT:   "file-text",
-            self.PLAN:  "map",
-        }
-        return icons[self]
-
-
 class ResourceStatus(str, Enum):
-    PLANLI     = "PLANLI"
+    PLANLI       = "PLANLI"
     DEVAM_EDIYOR = "DEVAM_EDIYOR"
-    TAMAMLANDI = "TAMAMLANDI"
+    TAMAMLANDI   = "TAMAMLANDI"
 
     def label(self) -> str:
         labels = {
@@ -41,3 +15,43 @@ class ResourceStatus(str, Enum):
             self.TAMAMLANDI:   "Tamamlandı",
         }
         return labels[self]
+
+
+class ResourcePriority(str, Enum):
+    LOW    = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH   = "HIGH"
+    URGENT = "URGENT"
+
+    def label(self) -> str:
+        labels = {
+            self.LOW:    "Düşük",
+            self.MEDIUM: "Orta",
+            self.HIGH:   "Yüksek",
+            self.URGENT: "Acil",
+        }
+        return labels[self]
+
+    def color(self) -> str:
+        colors = {
+            self.LOW:    "#8B949E",
+            self.MEDIUM: "#2F81F7",
+            self.HIGH:   "#D29922",
+            self.URGENT: "#EF4444",
+        }
+        return colors[self]
+
+
+# Geriye uyumluluk — eski enum hâlâ import edilebilir ama artık kullanılmıyor
+# Kaynak türleri artık DB'den dinamik olarak yönetiliyor (resource_types tablosu)
+class ResourceType(str, Enum):
+    """Eski statik enum — geriye uyumluluk için korunuyor.
+    Yeni kod ResourceTypeDynamic kullanmalı."""
+    KURS  = "Kurs"
+    VIDEO = "Video"
+    REPO  = "Repo"
+    NOT   = "Not"
+    PLAN  = "Plan"
+
+    def label(self) -> str:
+        return self.value
