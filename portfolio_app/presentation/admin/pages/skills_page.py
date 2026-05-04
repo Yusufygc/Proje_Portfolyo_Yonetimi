@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QScrollArea, QFrame, QDialog, QLineEdit, QFormLayout, QSpinBox, 
     QGridLayout, QSizePolicy
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
 
 from styles.constants import COLORS, FONTS
@@ -15,6 +15,7 @@ from presentation.shared.confirm_dialog import confirm
 from presentation.shared.toast import show_toast, Toast
 from config import get_data_path
 import os
+from resources.icon_manager import IconManager, Icons
 
 GRID_COLS = 3
 CARD_MIN_W = 200
@@ -51,7 +52,9 @@ class SkillsPage(QWidget):
         h_lay.addWidget(title_lbl)
         h_lay.addStretch()
 
-        add_btn = QPushButton("＋  Yetenek Ekle")
+        add_btn = QPushButton(" Yetenek Ekle")
+        add_btn.setIcon(IconManager.get(Icons.ADD))
+        add_btn.setIconSize(QSize(18, 18))
         add_btn.setCursor(Qt.PointingHandCursor)
         add_btn.setFixedHeight(36)
         add_btn.setStyleSheet(self._primary_btn_style())
@@ -139,13 +142,17 @@ class SkillsPage(QWidget):
         action_row = QHBoxLayout()
         action_row.addStretch()
 
-        edit_btn = QPushButton("Düzenle")
+        edit_btn = QPushButton(" Düzenle")
+        edit_btn.setIcon(IconManager.get(Icons.EDIT))
+        edit_btn.setIconSize(QSize(14, 14))
         edit_btn.setCursor(Qt.PointingHandCursor)
         edit_btn.setStyleSheet(self._ghost_btn_style())
         edit_btn.clicked.connect(lambda: self._open_edit_dialog(skill))
         action_row.addWidget(edit_btn)
 
-        del_btn = QPushButton("Sil")
+        del_btn = QPushButton(" Sil")
+        del_btn.setIcon(IconManager.get(Icons.DELETE))
+        del_btn.setIconSize(QSize(14, 14))
         del_btn.setCursor(Qt.PointingHandCursor)
         del_btn.setStyleSheet(self._danger_btn_style())
         del_btn.clicked.connect(lambda: self._delete(skill))
@@ -261,7 +268,9 @@ class SkillDialog(QDialog):
 
         btn_row = QHBoxLayout()
         btn_row.addStretch()
-        save_btn = QPushButton("Kaydet")
+        save_btn = QPushButton(" Kaydet")
+        save_btn.setIcon(IconManager.get(Icons.CHECK))
+        save_btn.setIconSize(QSize(16, 16))
         save_btn.clicked.connect(self.accept)
         save_btn.setStyleSheet(f"background: {COLORS['accent_blue']}; color: white; padding: 6px 12px; border-radius: 6px;")
         btn_row.addWidget(save_btn)

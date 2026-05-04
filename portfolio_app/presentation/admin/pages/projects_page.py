@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QComboBox, QCheckBox, QFormLayout, QSpinBox, QSplitter,
     QListWidget, QListWidgetItem, QSizePolicy
 )
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 from PySide6.QtGui import QFont
 
 from styles.constants import COLORS, FONTS
@@ -18,6 +18,7 @@ from domain.enums.project_status import ProjectStatus
 from domain.enums.task_type import TaskType, TaskStatus
 from presentation.shared.confirm_dialog import confirm
 from presentation.shared.toast import show_toast, Toast
+from resources.icon_manager import IconManager, Icons
 
 
 # ── Todo yardımcıları ────────────────────────────────────────────────────────
@@ -82,7 +83,9 @@ class ProjectsPage(QWidget):
         h_lay.addWidget(title)
         h_lay.addStretch()
 
-        add_btn = QPushButton("+ Yeni Proje")
+        add_btn = QPushButton(" Yeni Proje")
+        add_btn.setIcon(IconManager.get(Icons.ADD))
+        add_btn.setIconSize(QSize(18, 18))
         add_btn.setCursor(Qt.PointingHandCursor)
         add_btn.clicked.connect(self._open_create_dialog)
         h_lay.addWidget(add_btn)
@@ -209,7 +212,9 @@ class ProjectsPage(QWidget):
         task_hdr.addWidget(task_lbl)
         task_hdr.addStretch()
 
-        add_task_btn = QPushButton("+ Task Ekle")
+        add_task_btn = QPushButton(" Task Ekle")
+        add_task_btn.setIcon(IconManager.get(Icons.ADD))
+        add_task_btn.setIconSize(QSize(14, 14))
         add_task_btn.setObjectName("btn_flat")
         add_task_btn.setCursor(Qt.PointingHandCursor)
         add_task_btn.clicked.connect(lambda: self._open_task_dialog(project.id))
@@ -270,13 +275,17 @@ class ProjectsPage(QWidget):
         title_row.addWidget(title_lbl)
         title_row.addStretch()
 
-        edit_btn = QPushButton("Düzenle")
+        edit_btn = QPushButton(" Düzenle")
+        edit_btn.setIcon(IconManager.get(Icons.EDIT))
+        edit_btn.setIconSize(QSize(14, 14))
         edit_btn.setObjectName("btn_flat")
         edit_btn.setCursor(Qt.PointingHandCursor)
         edit_btn.clicked.connect(lambda: self._open_edit_dialog(project))
         title_row.addWidget(edit_btn)
 
-        del_btn = QPushButton("Sil")
+        del_btn = QPushButton(" Sil")
+        del_btn.setIcon(IconManager.get(Icons.DELETE))
+        del_btn.setIconSize(QSize(14, 14))
         del_btn.setObjectName("btn_danger")
         del_btn.setCursor(Qt.PointingHandCursor)
         del_btn.clicked.connect(lambda: self._delete_project(project))
@@ -425,7 +434,9 @@ class TaskCardWidget(QFrame):
         self._update_counter()
 
         # Düzenle butonu
-        edit_btn = QPushButton("✎")
+        edit_btn = QPushButton("")
+        edit_btn.setIcon(IconManager.get(Icons.EDIT))
+        edit_btn.setIconSize(QSize(14, 14))
         edit_btn.setObjectName("btn_icon")
         edit_btn.setCursor(Qt.PointingHandCursor)
         edit_btn.setFixedSize(28, 28)
@@ -434,7 +445,9 @@ class TaskCardWidget(QFrame):
         h_lay.addWidget(edit_btn)
 
         # Sil butonu
-        del_btn = QPushButton("✕")
+        del_btn = QPushButton("")
+        del_btn.setIcon(IconManager.get(Icons.DELETE))
+        del_btn.setIconSize(QSize(14, 14))
         del_btn.setObjectName("btn_icon")
         del_btn.setCursor(Qt.PointingHandCursor)
         del_btn.setFixedSize(28, 28)
@@ -504,7 +517,9 @@ class TaskCardWidget(QFrame):
         self._todo_input.returnPressed.connect(self._add_todo)
         add_lay.addWidget(self._todo_input, stretch=1)
 
-        add_btn = QPushButton("+ Ekle")
+        add_btn = QPushButton(" Ekle")
+        add_btn.setIcon(IconManager.get(Icons.ADD))
+        add_btn.setIconSize(QSize(12, 12))
         add_btn.setObjectName("btn_flat")
         add_btn.setCursor(Qt.PointingHandCursor)
         add_btn.setFixedHeight(28)
@@ -550,7 +565,9 @@ class TaskCardWidget(QFrame):
         lay.addWidget(text_lbl, stretch=1)
 
         # Sil butonu
-        del_btn = QPushButton("✕")
+        del_btn = QPushButton("")
+        del_btn.setIcon(IconManager.get(Icons.DELETE))
+        del_btn.setIconSize(QSize(12, 12))
         del_btn.setObjectName("btn_icon")
         del_btn.setCursor(Qt.PointingHandCursor)
         del_btn.setFixedSize(22, 22)
@@ -695,11 +712,15 @@ class ProjectDialog(QDialog):
 
         btn_row = QHBoxLayout()
         btn_row.addStretch()
-        cancel = QPushButton("İptal")
+        cancel = QPushButton(" İptal")
+        cancel.setIcon(IconManager.get(Icons.CLOSE))
+        cancel.setIconSize(QSize(16, 16))
         cancel.setObjectName("btn_flat")
         cancel.clicked.connect(self.reject)
         btn_row.addWidget(cancel)
-        save = QPushButton("Kaydet")
+        save = QPushButton(" Kaydet")
+        save.setIcon(IconManager.get(Icons.CHECK))
+        save.setIconSize(QSize(16, 16))
         save.clicked.connect(self.accept)
         btn_row.addWidget(save)
         layout.addLayout(btn_row)

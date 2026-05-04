@@ -106,6 +106,21 @@ class PersonalInfoPage(QWidget):
         # Kaydet butonu
         save_btn = QPushButton("Kaydet")
         save_btn.setCursor(Qt.PointingHandCursor)
+        save_btn.setFixedHeight(36)
+        save_btn.setFixedWidth(140)
+        save_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS['accent_blue']};
+                color: {COLORS['white']};
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS['accent_blue_dark']};
+            }}
+        """)
         save_btn.clicked.connect(self._save)
         layout.addWidget(save_btn, alignment=Qt.AlignLeft)
         layout.addStretch()
