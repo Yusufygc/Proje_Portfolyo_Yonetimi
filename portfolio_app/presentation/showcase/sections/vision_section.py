@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from styles.constants import COLORS
 from domain.models.personal_info import PersonalInfo
 
 
@@ -17,11 +18,11 @@ class VisionSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QWidget#vision_section {
-                background: #0D1117;
-                border-top: 1px solid #21262D;
-            }
+        self.setStyleSheet(f"""
+            QWidget#vision_section {{
+                background: {COLORS['bg_primary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
         """)
 
         layout = QVBoxLayout(self)
@@ -33,8 +34,8 @@ class VisionSection(QWidget):
         header_col.setSpacing(8)
 
         label = QLabel("// VİZYON & MİSYON")
-        label.setStyleSheet("""
-            color: #2F81F7;
+        label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 3px;
@@ -42,16 +43,16 @@ class VisionSection(QWidget):
         header_col.addWidget(label)
 
         title = QLabel("Vizyon & Misyon")
-        title.setStyleSheet("""
-            color: #E6EDF3;
+        title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 36px;
             font-weight: 700;
         """)
         header_col.addWidget(title)
 
         subtitle = QLabel("Hedeflerim ve yazılım geliştirme felsefem")
-        subtitle.setStyleSheet("""
-            color: #8B949E;
+        subtitle.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
         """)
         header_col.addWidget(subtitle)
@@ -65,16 +66,16 @@ class VisionSection(QWidget):
         self._vision_card = self._make_card(
             icon="🎯",
             label="Vizyonum",
-            title_color="#2F81F7",
-            border_color="#2F81F7",
-            accent_color="#2F81F7",
+            title_color=COLORS['accent_blue'],
+            border_color=COLORS['accent_blue'],
+            accent_color=COLORS['accent_blue'],
         )
         self._mission_card = self._make_card(
             icon="⚡",
             label="Misyonum",
-            title_color="#3FB950",
-            border_color="#3FB950",
-            accent_color="#3FB950",
+            title_color=COLORS['success'],
+            border_color=COLORS['success'],
+            accent_color=COLORS['success'],
         )
         cards_row.addWidget(self._vision_card["widget"])
         cards_row.addWidget(self._mission_card["widget"])
@@ -87,8 +88,8 @@ class VisionSection(QWidget):
         frame.setObjectName("vision_card")
         frame.setStyleSheet(f"""
             QFrame#vision_card {{
-                background: #161B22;
-                border: 1px solid #30363D;
+                background: {COLORS['bg_card']};
+                border: 1px solid {COLORS['border']};
                 border-left: 3px solid {border_color};
                 border-radius: 12px;
             }}
@@ -134,8 +135,8 @@ class VisionSection(QWidget):
         # İçerik metni — veri admin panelden gelir, dokunma
         text_lbl = QLabel("")
         text_lbl.setWordWrap(True)
-        text_lbl.setStyleSheet("""
-            color: #8B949E;
+        text_lbl.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
             background: transparent;
             border: none;

@@ -19,11 +19,11 @@ class ProjectsSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QWidget#projects_section {
-                background: #161B22;
-                border-top: 1px solid #21262D;
-            }
+        self.setStyleSheet(f"""
+            QWidget#projects_section {{
+                background: {COLORS['bg_secondary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
         """)
 
         layout = QVBoxLayout(self)
@@ -35,8 +35,8 @@ class ProjectsSection(QWidget):
         header_col.setSpacing(8)
 
         label = QLabel("// PROJELER")
-        label.setStyleSheet("""
-            color: #2F81F7;
+        label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 3px;
@@ -44,16 +44,16 @@ class ProjectsSection(QWidget):
         header_col.addWidget(label)
 
         title = QLabel("Projelerim")
-        title.setStyleSheet("""
-            color: #E6EDF3;
+        title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 36px;
             font-weight: 700;
         """)
         header_col.addWidget(title)
 
         subtitle = QLabel("Geliştirdiğim ürünler ve açık kaynak katkılarım")
-        subtitle.setStyleSheet("""
-            color: #8B949E;
+        subtitle.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
         """)
         header_col.addWidget(subtitle)
@@ -70,7 +70,7 @@ class ProjectsSection(QWidget):
 
         self._empty_label = QLabel("Henüz proje eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet("color: #484F58; font-size: 15px;")
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 

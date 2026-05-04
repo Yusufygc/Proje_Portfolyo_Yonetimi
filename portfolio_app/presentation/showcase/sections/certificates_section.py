@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from styles.constants import COLORS
 from domain.models.certificate import Certificate
 from presentation.showcase.widgets.cert_card import CertCard
 
@@ -18,11 +19,11 @@ class CertificatesSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QWidget#certificates_section {
-                background: #161B22;
-                border-top: 1px solid #21262D;
-            }
+        self.setStyleSheet(f"""
+            QWidget#certificates_section {{
+                background: {COLORS['bg_secondary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
         """)
 
         layout = QVBoxLayout(self)
@@ -34,8 +35,8 @@ class CertificatesSection(QWidget):
         header_col.setSpacing(8)
 
         label = QLabel("// SERTİFİKALAR")
-        label.setStyleSheet("""
-            color: #2F81F7;
+        label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 3px;
@@ -43,16 +44,16 @@ class CertificatesSection(QWidget):
         header_col.addWidget(label)
 
         title = QLabel("Sertifikalarım")
-        title.setStyleSheet("""
-            color: #E6EDF3;
+        title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 36px;
             font-weight: 700;
         """)
         header_col.addWidget(title)
 
         subtitle = QLabel("Aldığım eğitimler ve başarı sertifikaları")
-        subtitle.setStyleSheet("""
-            color: #8B949E;
+        subtitle.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
         """)
         header_col.addWidget(subtitle)
@@ -68,7 +69,7 @@ class CertificatesSection(QWidget):
 
         self._empty_label = QLabel("Henüz sertifika eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet("color: #484F58; font-size: 15px;")
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 

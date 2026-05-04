@@ -6,12 +6,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from styles.constants import COLORS
 from domain.models.project import Project
 from domain.enums.project_status import ProjectStatus
 
 
 class ProjectCard(QFrame):
-    """Vitrin'de gösterilen proje kartı — GitHub dark tema."""
+    """Vitrin'de gösterilen proje kartı — tema uyumlu."""
 
     def __init__(self, project: Project, parent=None):
         super().__init__(parent)
@@ -20,40 +21,40 @@ class ProjectCard(QFrame):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QFrame#project_card {
-                background: #161B22;
-                border: 1px solid #30363D;
+        self.setStyleSheet(f"""
+            QFrame#project_card {{
+                background: {COLORS['bg_card']};
+                border: 1px solid {COLORS['border']};
                 border-radius: 12px;
-            }
-            QFrame#project_card:hover {
-                border-color: #2F81F7;
-            }
-            QPushButton#gh_btn {
+            }}
+            QFrame#project_card:hover {{
+                border-color: {COLORS['accent_blue']};
+            }}
+            QPushButton#gh_btn {{
                 background: transparent;
-                border: 1px solid #30363D;
-                color: #8B949E;
-                padding: 8px 16px;
+                border: 1px solid {COLORS['border']};
+                color: {COLORS['text_secondary']};
+                padding: 6px 14px;
                 border-radius: 6px;
-                font-size: 13px;
+                font-size: 12px;
                 text-align: left;
-            }
-            QPushButton#gh_btn:hover {
-                border-color: #2F81F7;
-                color: #2F81F7;
-            }
-            QPushButton#demo_btn {
+            }}
+            QPushButton#gh_btn:hover {{
+                border-color: {COLORS['accent_blue']};
+                color: {COLORS['accent_blue']};
+            }}
+            QPushButton#demo_btn {{
                 background: transparent;
-                border: 1px solid #30363D;
-                color: #8B949E;
-                padding: 8px 16px;
+                border: 1px solid {COLORS['border']};
+                color: {COLORS['text_secondary']};
+                padding: 6px 14px;
                 border-radius: 6px;
-                font-size: 13px;
-            }
-            QPushButton#demo_btn:hover {
-                border-color: #2F81F7;
-                color: #2F81F7;
-            }
+                font-size: 12px;
+            }}
+            QPushButton#demo_btn:hover {{
+                border-color: {COLORS['accent_blue']};
+                color: {COLORS['accent_blue']};
+            }}
         """)
         self.setMinimumWidth(280)
 
@@ -71,8 +72,8 @@ class ProjectCard(QFrame):
 
         if self._project.is_featured:
             featured_lbl = QLabel("✦ Öne Çıkan")
-            featured_lbl.setStyleSheet("""
-                color: #D29922;
+            featured_lbl.setStyleSheet(f"""
+                color: {COLORS['warning']};
                 font-size: 11px;
                 font-weight: 600;
                 background: rgba(210, 153, 34, 0.1);
@@ -87,8 +88,8 @@ class ProjectCard(QFrame):
 
         # Başlık
         title = QLabel(self._project.title)
-        title.setStyleSheet("""
-            color: #E6EDF3;
+        title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 18px;
             font-weight: 600;
         """)
@@ -99,7 +100,7 @@ class ProjectCard(QFrame):
         # Kısa açıklama
         desc = QLabel(self._project.short_description or "")
         desc.setWordWrap(True)
-        desc.setStyleSheet("color: #8B949E; font-size: 14px;")
+        desc.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 14px;")
         layout.addWidget(desc)
         layout.addSpacing(12)
 
@@ -109,11 +110,11 @@ class ProjectCard(QFrame):
             tags_row.setSpacing(8)
             for tag in self._project.tags[:5]:
                 lbl = QLabel(tag.tag_name)
-                lbl.setStyleSheet("""
-                    background: rgba(47, 129, 247, 0.1);
-                    border: 1px solid rgba(47, 129, 247, 0.3);
+                lbl.setStyleSheet(f"""
+                    background: {COLORS['tag_bg']};
+                    border: 1px solid {COLORS['tag_border']};
                     border-radius: 20px;
-                    color: #79C0FF;
+                    color: {COLORS['tag_text']};
                     font-size: 12px;
                     font-weight: 500;
                     padding: 3px 10px;
@@ -151,55 +152,55 @@ class ProjectCard(QFrame):
 
         if status == ProjectStatus.DEVAM_EDIYOR:
             lbl.setText("● Devam Ediyor")
-            lbl.setStyleSheet("""
+            lbl.setStyleSheet(f"""
                 background: rgba(63, 185, 80, 0.15);
                 border: 1px solid rgba(63, 185, 80, 0.4);
                 border-radius: 20px;
-                color: #3FB950;
+                color: {COLORS['success']};
                 font-size: 12px;
                 font-weight: 500;
                 padding: 4px 10px;
             """)
         elif status == ProjectStatus.BEKLEMEDE:
             lbl.setText("◐ Beklemede")
-            lbl.setStyleSheet("""
+            lbl.setStyleSheet(f"""
                 background: rgba(210, 153, 34, 0.15);
                 border: 1px solid rgba(210, 153, 34, 0.4);
                 border-radius: 20px;
-                color: #D29922;
+                color: {COLORS['warning']};
                 font-size: 12px;
                 font-weight: 500;
                 padding: 4px 10px;
             """)
         elif status == ProjectStatus.TAMAMLANDI:
             lbl.setText("✓ Tamamlandı")
-            lbl.setStyleSheet("""
+            lbl.setStyleSheet(f"""
                 background: rgba(47, 129, 247, 0.15);
                 border: 1px solid rgba(47, 129, 247, 0.4);
                 border-radius: 20px;
-                color: #2F81F7;
+                color: {COLORS['accent_blue']};
                 font-size: 12px;
                 font-weight: 500;
                 padding: 4px 10px;
             """)
         elif status == ProjectStatus.IPTAL:
             lbl.setText("✕ İptal")
-            lbl.setStyleSheet("""
+            lbl.setStyleSheet(f"""
                 background: rgba(239, 68, 68, 0.1);
                 border: 1px solid rgba(239, 68, 68, 0.3);
                 border-radius: 20px;
-                color: #EF4444;
+                color: {COLORS['error']};
                 font-size: 12px;
                 font-weight: 500;
                 padding: 4px 10px;
             """)
         else:
             lbl.setText(status.label() if hasattr(status, 'label') else str(status))
-            lbl.setStyleSheet("""
+            lbl.setStyleSheet(f"""
                 background: rgba(72, 79, 88, 0.2);
-                border: 1px solid #30363D;
+                border: 1px solid {COLORS['border']};
                 border-radius: 20px;
-                color: #8B949E;
+                color: {COLORS['text_secondary']};
                 font-size: 12px;
                 font-weight: 500;
                 padding: 4px 10px;

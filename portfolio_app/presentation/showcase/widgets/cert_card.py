@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from config import get_data_path
+from styles.constants import COLORS
 from domain.models.certificate import Certificate
 
 CARD_WIDTH = 280
@@ -28,27 +29,27 @@ class CertCard(QFrame):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QFrame#cert_card {
-                background: #161B22;
-                border: 1px solid #30363D;
+        self.setStyleSheet(f"""
+            QFrame#cert_card {{
+                background: {COLORS['bg_card']};
+                border: 1px solid {COLORS['border']};
                 border-radius: 12px;
-            }
-            QFrame#cert_card:hover {
-                border-color: #D29922;
-            }
-            QPushButton#verify_btn {
+            }}
+            QFrame#cert_card:hover {{
+                border-color: {COLORS['warning']};
+            }}
+            QPushButton#verify_btn {{
                 background: transparent;
-                border: 1px solid #30363D;
-                color: #8B949E;
+                border: 1px solid {COLORS['border']};
+                color: {COLORS['text_secondary']};
                 padding: 4px 14px;
                 border-radius: 6px;
                 font-size: 12px;
-            }
-            QPushButton#verify_btn:hover {
-                border-color: #2F81F7;
-                color: #2F81F7;
-            }
+            }}
+            QPushButton#verify_btn:hover {{
+                border-color: {COLORS['accent_blue']};
+                color: {COLORS['accent_blue']};
+            }}
         """)
 
         layout = QVBoxLayout(self)
@@ -58,15 +59,15 @@ class CertCard(QFrame):
         # ── Görsel alanı ─────────────────────────────────────────────────────
         img_frame = QFrame()
         img_frame.setFixedHeight(IMG_HEIGHT)
-        img_frame.setStyleSheet("""
-            QFrame {
-                background: #0D1117;
+        img_frame.setStyleSheet(f"""
+            QFrame {{
+                background: {COLORS['bg_primary']};
                 border-top-left-radius: 12px;
                 border-top-right-radius: 12px;
                 border-bottom-left-radius: 0px;
                 border-bottom-right-radius: 0px;
                 border: none;
-            }
+            }}
         """)
         img_layout = QVBoxLayout(img_frame)
         img_layout.setContentsMargins(0, 0, 0, 0)
@@ -102,8 +103,8 @@ class CertCard(QFrame):
 
         name_lbl = QLabel(self._cert.name)
         name_lbl.setWordWrap(True)
-        name_lbl.setStyleSheet("""
-            color: #E6EDF3;
+        name_lbl.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 15px;
             font-weight: 600;
             background: transparent;
@@ -113,8 +114,8 @@ class CertCard(QFrame):
 
         if self._cert.issuer:
             issuer_lbl = QLabel(self._cert.issuer)
-            issuer_lbl.setStyleSheet("""
-                color: #2F81F7;
+            issuer_lbl.setStyleSheet(f"""
+                color: {COLORS['accent_blue']};
                 font-size: 13px;
                 background: transparent;
                 border: none;
@@ -123,8 +124,8 @@ class CertCard(QFrame):
 
         if self._cert.date:
             date_lbl = QLabel(self._cert.date)
-            date_lbl.setStyleSheet("""
-                color: #484F58;
+            date_lbl.setStyleSheet(f"""
+                color: {COLORS['text_muted']};
                 font-size: 12px;
                 background: transparent;
                 border: none;

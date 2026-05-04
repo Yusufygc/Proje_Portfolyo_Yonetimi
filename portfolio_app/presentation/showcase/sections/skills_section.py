@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from styles.constants import COLORS
 from domain.models.skill import Skill
 from config import get_data_path
 
@@ -17,11 +18,11 @@ class SkillsSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QWidget#skills_section {
-                background: #0D1117;
-                border-top: 1px solid #21262D;
-            }
+        self.setStyleSheet(f"""
+            QWidget#skills_section {{
+                background: {COLORS['bg_primary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
         """)
 
         layout = QVBoxLayout(self)
@@ -33,8 +34,8 @@ class SkillsSection(QWidget):
         header_col.setSpacing(8)
 
         label = QLabel("// YETENEKLER & BECERİLER")
-        label.setStyleSheet("""
-            color: #2F81F7;
+        label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 3px;
@@ -42,16 +43,16 @@ class SkillsSection(QWidget):
         header_col.addWidget(label)
 
         title = QLabel("Yeteneklerim")
-        title.setStyleSheet("""
-            color: #E6EDF3;
+        title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 36px;
             font-weight: 700;
         """)
         header_col.addWidget(title)
 
         subtitle = QLabel("Kullandığım teknolojiler ve yetkinlik seviyelerim")
-        subtitle.setStyleSheet("""
-            color: #8B949E;
+        subtitle.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
         """)
         header_col.addWidget(subtitle)
@@ -69,7 +70,7 @@ class SkillsSection(QWidget):
 
         self._empty_label = QLabel("Henüz yetenek eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet("color: #484F58; font-size: 15px;")
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 
@@ -81,7 +82,7 @@ class SkillsSection(QWidget):
 
         if not skills:
             self._empty_label.setVisible(True)
-            self.setVisible(False)  # Yetenek yoksa bolumu gizleyebiliriz veya gosteririz
+            self.setVisible(False)
             return
 
         self.setVisible(True)
@@ -98,15 +99,15 @@ class SkillsSection(QWidget):
         card = QFrame()
         card.setMinimumWidth(280)
         card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        card.setStyleSheet("""
-            QFrame {
-                background: #161B22;
-                border: 1px solid #30363D;
+        card.setStyleSheet(f"""
+            QFrame {{
+                background: {COLORS['bg_card']};
+                border: 1px solid {COLORS['border']};
                 border-radius: 8px;
-            }
-            QFrame:hover {
-                border: 1px solid #8B949E;
-            }
+            }}
+            QFrame:hover {{
+                border: 1px solid {COLORS['text_secondary']};
+            }}
         """)
         lay = QVBoxLayout(card)
         lay.setContentsMargins(16, 16, 16, 16)
@@ -126,26 +127,26 @@ class SkillsSection(QWidget):
 
         txt_col = QVBoxLayout()
         name_lbl = QLabel(skill.name)
-        name_lbl.setStyleSheet("color: #E6EDF3; font-size: 18px; font-weight: 700; border: none; background: transparent;")
+        name_lbl.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 18px; font-weight: 700; border: none; background: transparent;")
         txt_col.addWidget(name_lbl)
         
         if skill.category:
             cat_lbl = QLabel(skill.category)
-            cat_lbl.setStyleSheet("color: #8B949E; font-size: 13px; border: none; background: transparent;")
+            cat_lbl.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 13px; border: none; background: transparent;")
             txt_col.addWidget(cat_lbl)
         
         top_row.addLayout(txt_col)
         top_row.addStretch()
         lay.addLayout(top_row)
 
-        # Progress Barlay
+        # Progress Bar
         prog_lay = QVBoxLayout()
         prog_lay.setSpacing(4)
         
         perc_row = QHBoxLayout()
         perc_row.addStretch()
         perc_lbl = QLabel(f"%{skill.rating}")
-        perc_lbl.setStyleSheet("color: #4FACFE; font-size: 13px; font-weight: bold; border: none; background: transparent;")
+        perc_lbl.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 13px; font-weight: bold; border: none; background: transparent;")
         perc_row.addWidget(perc_lbl)
         prog_lay.addLayout(perc_row)
 
@@ -153,13 +154,13 @@ class SkillsSection(QWidget):
         bar_bg = QFrame()
         bar_bg.setFixedHeight(8)
         bar_bg.setObjectName("bar_bg")
-        bar_bg.setStyleSheet("QFrame#bar_bg { background: #21262D; border-radius: 4px; border: none; }")
+        bar_bg.setStyleSheet(f"QFrame#bar_bg {{ background: {COLORS['bg_active']}; border-radius: 4px; border: none; }}")
 
         bar_fg = QFrame()
         bar_fg.setFixedHeight(8)
         bar_fg.setObjectName("bar_fg")
         bar_fg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        bar_fg.setStyleSheet("QFrame#bar_fg { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1F6FEB, stop:1 #4FACFE); border-radius: 4px; border: none; }")
+        bar_fg.setStyleSheet(f"QFrame#bar_fg {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {COLORS['accent_blue']}, stop:1 {COLORS['accent_blue_dark']}); border-radius: 4px; border: none; }}")
 
         inner_lay = QHBoxLayout(bar_bg)
         inner_lay.setContentsMargins(0, 0, 0, 0)

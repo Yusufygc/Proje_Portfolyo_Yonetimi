@@ -23,10 +23,10 @@ class AboutSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet("""
-            QWidget#about_section {
-                background: #0D1117;
-            }
+        self.setStyleSheet(f"""
+            QWidget#about_section {{
+                background: {COLORS['bg_primary']};
+            }}
         """)
 
         outer = QVBoxLayout(self)
@@ -41,15 +41,15 @@ class AboutSection(QWidget):
         self._avatar_label = QLabel()
         self._avatar_label.setFixedSize(160, 210)
         self._avatar_label.setAlignment(Qt.AlignCenter)
-        self._avatar_label.setStyleSheet("""
-            QLabel {
-                background: #161B22;
-                border: 2px solid #2F81F7;
+        self._avatar_label.setStyleSheet(f"""
+            QLabel {{
+                background: {COLORS['bg_secondary']};
+                border: 2px solid {COLORS['accent_blue']};
                 border-radius: 10px;
-                color: #8B949E;
+                color: {COLORS['text_secondary']};
                 font-size: 32px;
                 font-weight: 700;
-            }
+            }}
         """)
         self._avatar_label.setText("YG")
         content_row.addWidget(self._avatar_label)
@@ -60,8 +60,8 @@ class AboutSection(QWidget):
         text_col.setAlignment(Qt.AlignVCenter)
 
         self._name_label = QLabel("Ad Soyad")
-        self._name_label.setStyleSheet("""
-            color: #E6EDF3;
+        self._name_label.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
             font-size: 42px;
             font-weight: 700;
         """)
@@ -69,11 +69,11 @@ class AboutSection(QWidget):
 
         # Unvan — border-left çizgisi
         self._title_label = QLabel("Yazılım Geliştirici")
-        self._title_label.setStyleSheet("""
-            color: #2F81F7;
+        self._title_label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
             font-size: 18px;
             font-weight: 500;
-            border-left: 3px solid #2F81F7;
+            border-left: 3px solid {COLORS['accent_blue']};
             padding-left: 12px;
         """)
         text_col.addWidget(self._title_label)
@@ -82,8 +82,8 @@ class AboutSection(QWidget):
         self._bio_label = QLabel("")
         self._bio_label.setWordWrap(True)
         self._bio_label.setMaximumWidth(480)
-        self._bio_label.setStyleSheet("""
-            color: #8B949E;
+        self._bio_label.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
             font-size: 15px;
         """)
         text_col.addWidget(self._bio_label)
@@ -123,31 +123,31 @@ class AboutSection(QWidget):
         outer.addLayout(content_row)
 
         # Buton stilleri
-        self.setStyleSheet(self.styleSheet() + """
-            QPushButton#btn_primary {
-                background: #2F81F7;
-                color: #FFFFFF;
+        self.setStyleSheet(self.styleSheet() + f"""
+            QPushButton#btn_primary {{
+                background: {COLORS['accent_blue']};
+                color: {COLORS['white']};
                 border: none;
                 padding: 10px 20px;
                 border-radius: 6px;
                 font-size: 14px;
                 font-weight: 600;
-            }
-            QPushButton#btn_primary:hover {
-                background: #388BFD;
-            }
-            QPushButton#btn_secondary {
+            }}
+            QPushButton#btn_primary:hover {{
+                background: {COLORS['accent_blue_dark']};
+            }}
+            QPushButton#btn_secondary {{
                 background: transparent;
-                color: #E6EDF3;
-                border: 1px solid #30363D;
+                color: {COLORS['text_primary']};
+                border: 1px solid {COLORS['border']};
                 padding: 10px 20px;
                 border-radius: 6px;
                 font-size: 14px;
-            }
-            QPushButton#btn_secondary:hover {
-                border-color: #2F81F7;
-                color: #2F81F7;
-            }
+            }}
+            QPushButton#btn_secondary:hover {{
+                border-color: {COLORS['accent_blue']};
+                color: {COLORS['accent_blue']};
+            }}
         """)
 
     def load_data(self, info: PersonalInfo) -> None:
