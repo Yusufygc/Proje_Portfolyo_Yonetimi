@@ -42,9 +42,14 @@ class AdminPanel(QWidget):
         layout.addWidget(self._sidebar)
 
         self._stack = QStackedWidget()
-        self._stack.setStyleSheet(f"background: {COLORS['bg_primary']};")
         layout.addWidget(self._stack)
 
+        self._pages = {}
+        self._build_pages()
+        self._switch_page("dashboard")
+        self.apply_theme()
+
+    def _build_pages(self):
         c = self._container
         self._pages = {
             "dashboard":     DashboardPage(c.project_controller, c.certificate_controller, c.resource_controller),
@@ -61,7 +66,25 @@ class AdminPanel(QWidget):
         for page in self._pages.values():
             self._stack.addWidget(page)
 
-        self._switch_page("dashboard")
+    def apply_theme(self):
+        self._stack.setStyleSheet(f"background: {COLORS['bg_primary']};")
+        
+        # Tema değiştiğinde tüm admin sayfalarını baştan oluştur ki yeni renkleri alsınlar
+        current_idx = self._stack.currentIndex()
+        
+        # Stack'i tamamen boşalt
+        while self._stack.count() > 0:
+            widget = self._stack.widget(0)
+            self._stack.removeWidget(widget)
+            widget.deleteLater()
+            
+        self._build_pages()
+        if current_idx >= 0 and current_idx < self._stack.count():
+            self._stack.setCurrentIndex(current_idx)
+            # Aktif sayfayı yenile
+            current_widget = self._stack.currentWidget()
+            if hasattr(current_widget, "refresh"):
+                current_widget.refresh()
 
     def _switch_page(self, page_id: str) -> None:
         if page_id == "__back__":

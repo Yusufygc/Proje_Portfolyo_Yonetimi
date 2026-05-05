@@ -33,22 +33,11 @@ class DashboardPage(QWidget):
         layout.setContentsMargins(32, 32, 32, 32)
         layout.setSpacing(32)
 
-        title = QLabel("Dashboard")
-        title.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: {FONTS['size_2xl']}px;
-            font-weight: 700;
-            background: transparent;
-            border: none;
-        """)
-        layout.addWidget(title)
+        self._title = QLabel("Dashboard")
+        layout.addWidget(self._title)
 
-        subtitle = QLabel("Portföy içeriklerine genel bakış")
-        subtitle.setStyleSheet(
-            f"color: {COLORS['text_secondary']}; font-size: 14px;"
-            f"background: transparent; border: none;"
-        )
-        layout.addWidget(subtitle)
+        self._subtitle = QLabel("Portföy içeriklerine genel bakış")
+        layout.addWidget(self._subtitle)
 
         # İstatistik kartları
         self._stat_grid = QGridLayout()
@@ -56,6 +45,22 @@ class DashboardPage(QWidget):
         layout.addLayout(self._stat_grid)
 
         layout.addStretch()
+        
+        self.apply_theme()
+
+    def apply_theme(self):
+        self._title.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
+            font-size: {FONTS['size_2xl']}px;
+            font-weight: 700;
+            background: transparent;
+            border: none;
+        """)
+        self._subtitle.setStyleSheet(
+            f"color: {COLORS['text_secondary']}; font-size: 14px;"
+            f"background: transparent; border: none;"
+        )
+        self.refresh()
 
     def refresh(self) -> None:
         # Mevcut kartları temizle

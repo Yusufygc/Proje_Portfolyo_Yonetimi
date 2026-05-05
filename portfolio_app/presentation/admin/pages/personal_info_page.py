@@ -42,9 +42,8 @@ class PersonalInfoPage(QWidget):
         layout.setSpacing(24)
 
         # Başlık
-        title = QLabel("Kişisel Bilgiler")
-        title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: {FONTS['size_lg']}px; font-weight: 700;")
-        layout.addWidget(title)
+        self._title = QLabel("Kişisel Bilgiler")
+        layout.addWidget(self._title)
 
         # Avatar
         avatar_row = QHBoxLayout()
@@ -127,6 +126,46 @@ class PersonalInfoPage(QWidget):
         save_btn.clicked.connect(self._save)
         layout.addWidget(save_btn, alignment=Qt.AlignLeft)
         layout.addStretch()
+        
+        self.apply_theme()
+
+    def apply_theme(self):
+        self._title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: {FONTS['size_lg']}px; font-weight: 700; background: transparent; border: none;")
+        
+        self._avatar_lbl.setStyleSheet(f"""
+            background: {COLORS['bg_card']};
+            border: 2px solid {COLORS['accent_blue']};
+            border-radius: 8px;
+            color: {COLORS['text_primary']};
+            font-size: 28px;
+            font-weight: 700;
+        """)
+
+        # Tüm form elemanlarına açıkça stil ver
+        self.setStyleSheet(f"""
+            QWidget {{
+                background: {COLORS['bg_primary']};
+            }}
+            QLabel {{
+                color: {COLORS['text_primary']};
+                font-size: 13px;
+                font-weight: 600;
+                background: transparent;
+                border: none;
+            }}
+            QLineEdit, QTextEdit {{
+                background: {COLORS['bg_input']};
+                color: {COLORS['text_primary']};
+                border: 1px solid {COLORS['border']};
+                border-radius: 6px;
+                padding: 8px;
+                font-size: 13px;
+            }}
+            QLineEdit:focus, QTextEdit:focus {{
+                border: 1px solid {COLORS['accent_blue']};
+                background: {COLORS['bg_secondary']};
+            }}
+        """)
 
     def refresh(self) -> None:
         info = self._ctrl.get()
