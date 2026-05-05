@@ -113,3 +113,6 @@ class Icons:
     SUN         = "sun"
     MOON        = "moon"
     PIN         = "map-pin"
+    EDUCATION   = "book"
+    EXPERIENCE  = "briefcase"
+    EXPORT      = "file-text"
