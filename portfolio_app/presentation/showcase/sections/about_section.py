@@ -23,11 +23,7 @@ class AboutSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#about_section {{
-                background: {COLORS['bg_primary']};
-            }}
-        """)
+
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(60, 80, 60, 80)
@@ -41,16 +37,6 @@ class AboutSection(QWidget):
         self._avatar_label = QLabel()
         self._avatar_label.setFixedSize(160, 210)
         self._avatar_label.setAlignment(Qt.AlignCenter)
-        self._avatar_label.setStyleSheet(f"""
-            QLabel {{
-                background: {COLORS['bg_secondary']};
-                border: 2px solid {COLORS['accent_blue']};
-                border-radius: 10px;
-                color: {COLORS['text_secondary']};
-                font-size: 32px;
-                font-weight: 700;
-            }}
-        """)
         self._avatar_label.setText("YG")
         content_row.addWidget(self._avatar_label)
 
@@ -60,43 +46,22 @@ class AboutSection(QWidget):
         text_col.setAlignment(Qt.AlignVCenter)
 
         self._name_label = QLabel("Ad Soyad")
-        self._name_label.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: 42px;
-            font-weight: 700;
-        """)
         text_col.addWidget(self._name_label)
 
         # Unvan — border-left çizgisi
         self._title_label = QLabel("Yazılım Geliştirici")
-        self._title_label.setStyleSheet(f"""
-            color: {COLORS['accent_blue']};
-            font-size: 18px;
-            font-weight: 500;
-            border-left: 3px solid {COLORS['accent_blue']};
-            padding-left: 12px;
-        """)
         text_col.addWidget(self._title_label)
 
         # Bio
         self._bio_label = QLabel("")
         self._bio_label.setWordWrap(True)
         self._bio_label.setMaximumWidth(480)
-        self._bio_label.setStyleSheet(f"""
-            color: {COLORS['text_secondary']};
-            font-size: 15px;
-        """)
         text_col.addWidget(self._bio_label)
 
         # Hobiler
         self._hobbies_label = QLabel("")
         self._hobbies_label.setWordWrap(True)
         self._hobbies_label.setMaximumWidth(480)
-        self._hobbies_label.setStyleSheet(f"""
-            color: {COLORS['text_muted']};
-            font-size: 13px;
-            margin-top: 8px;
-        """)
         text_col.addWidget(self._hobbies_label)
 
         # Butonlar
@@ -134,7 +99,13 @@ class AboutSection(QWidget):
         outer.addLayout(content_row)
 
         # Buton stilleri
-        self.setStyleSheet(self.styleSheet() + f"""
+        self.apply_theme()
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#about_section {{
+                background: {COLORS['bg_primary']};
+            }}
             QPushButton#btn_primary {{
                 background: {COLORS['accent_blue']};
                 color: {COLORS['white']};
@@ -159,6 +130,42 @@ class AboutSection(QWidget):
                 border-color: {COLORS['accent_blue']};
                 color: {COLORS['accent_blue']};
             }}
+        """)
+        
+        self._avatar_label.setStyleSheet(f"""
+            QLabel {{
+                background: {COLORS['bg_secondary']};
+                border: 2px solid {COLORS['accent_blue']};
+                border-radius: 10px;
+                color: {COLORS['text_secondary']};
+                font-size: 32px;
+                font-weight: 700;
+            }}
+        """)
+        
+        self._name_label.setStyleSheet(f"""
+            color: {COLORS['text_primary']};
+            font-size: 42px;
+            font-weight: 700;
+        """)
+        
+        self._title_label.setStyleSheet(f"""
+            color: {COLORS['accent_blue']};
+            font-size: 18px;
+            font-weight: 500;
+            border-left: 3px solid {COLORS['accent_blue']};
+            padding-left: 12px;
+        """)
+        
+        self._bio_label.setStyleSheet(f"""
+            color: {COLORS['text_secondary']};
+            font-size: 15px;
+        """)
+        
+        self._hobbies_label.setStyleSheet(f"""
+            color: {COLORS['text_muted']};
+            font-size: 13px;
+            margin-top: 8px;
         """)
 
     def load_data(self, info: PersonalInfo) -> None:

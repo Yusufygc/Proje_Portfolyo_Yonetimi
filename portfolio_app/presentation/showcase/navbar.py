@@ -28,6 +28,7 @@ class ShowcaseNavbar(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("navbar")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setFixedHeight(69)
         self._build_ui()
 
@@ -40,9 +41,6 @@ class ShowcaseNavbar(QWidget):
         # İmleç değişmeden (ArrowCursor) tıklanabilir — event filter ile
         self._brand = QLabel()
         self._brand.setObjectName("nav_brand")
-        self._brand.setText(f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">M</span>'
-                            f'<span style="color:{COLORS["text_primary"]};font-weight:700;letter-spacing:2px;">Y</span>'
-                            f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">Y</span>')
         self._brand.setTextFormat(Qt.RichText)
         self._brand.setCursor(Qt.ArrowCursor)   # imleç değişmesin
         self._brand.installEventFilter(self)
@@ -61,20 +59,30 @@ class ShowcaseNavbar(QWidget):
 
         # Tema değiştirme butonu
         layout.addSpacing(32)
-        is_dark = ThemeManager.get_current_theme().name == "dark"
-        theme_icon = Icons.SUN if is_dark else Icons.MOON
         self._theme_btn = QPushButton("")
-        self._theme_btn.setIcon(IconManager.get(theme_icon))
-        self._theme_btn.setIconSize(QSize(20, 20))
         self._theme_btn.setObjectName("theme_btn")
         self._theme_btn.setCursor(Qt.PointingHandCursor)
-        self._theme_btn.setToolTip("Temayı Değiştir (Restart)")
-        self._theme_btn.clicked.connect(ThemeManager.toggle_theme_and_restart)
+        self._theme_btn.setToolTip("Temayı Değiştir")
+        self._theme_btn.clicked.connect(ThemeManager.toggle_theme)
         layout.addWidget(self._theme_btn)
+        
+        self.apply_theme()
+
+    def apply_theme(self):
+        self._brand.setText(
+            f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">M</span>'
+            f'<span style="color:{COLORS["text_primary"]};font-weight:700;letter-spacing:2px;">Y</span>'
+            f'<span style="color:{COLORS["accent_blue"]};font-weight:700;letter-spacing:2px;">Y</span>'
+        )
+
+        is_dark = ThemeManager.get_current_theme().name == "dark"
+        theme_icon = Icons.SUN if is_dark else Icons.MOON
+        self._theme_btn.setIcon(IconManager.get(theme_icon))
+        self._theme_btn.setIconSize(QSize(20, 20))
 
         self.setStyleSheet(f"""
             QWidget#navbar {{
-                background: {COLORS['bg_primary']};
+                background: {COLORS['bg_navbar']};
                 border-bottom: 1px solid {COLORS['border']};
             }}
             QLabel#nav_brand {{

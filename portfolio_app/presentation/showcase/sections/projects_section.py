@@ -19,13 +19,6 @@ class ProjectsSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#projects_section {{
-                background: {COLORS['bg_secondary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
-
         layout = QVBoxLayout(self)
         layout.setContentsMargins(64, 80, 64, 80)
         layout.setSpacing(40)
@@ -70,12 +63,25 @@ class ProjectsSection(QWidget):
 
         self._empty_label = QLabel("Henüz proje eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 
+        self.apply_theme()
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#projects_section {{
+                background: {COLORS['bg_secondary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
+        if hasattr(self, '_current_projects'):
+            self.load_data(self._current_projects)
+
     def load_data(self, projects: list[Project]) -> None:
         """Proje listesini görüntüler."""
+        self._current_projects = projects
         while self._grid.count():
             item = self._grid.takeAt(0)
             if item.widget():

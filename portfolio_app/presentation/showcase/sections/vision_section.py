@@ -18,12 +18,9 @@ class VisionSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#vision_section {{
-                background: {COLORS['bg_primary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
+        self._label = QLabel("// VİZYON & MİSYON")
+        self._title = QLabel("Vizyon & Misyon")
+        self._subtitle = QLabel("Hedeflerim ve yazılım geliştirme felsefem")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(64, 80, 64, 80)
@@ -33,29 +30,11 @@ class VisionSection(QWidget):
         header_col = QVBoxLayout()
         header_col.setSpacing(8)
 
-        label = QLabel("// VİZYON & MİSYON")
-        label.setStyleSheet(f"""
-            color: {COLORS['accent_blue']};
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 3px;
-        """)
-        header_col.addWidget(label)
+        header_col.addWidget(self._label)
 
-        title = QLabel("Vizyon & Misyon")
-        title.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: 36px;
-            font-weight: 700;
-        """)
-        header_col.addWidget(title)
+        header_col.addWidget(self._title)
 
-        subtitle = QLabel("Hedeflerim ve yazılım geliştirme felsefem")
-        subtitle.setStyleSheet(f"""
-            color: {COLORS['text_secondary']};
-            font-size: 15px;
-        """)
-        header_col.addWidget(subtitle)
+        header_col.addWidget(self._subtitle)
 
         layout.addLayout(header_col)
 
@@ -81,6 +60,8 @@ class VisionSection(QWidget):
         cards_row.addWidget(self._mission_card["widget"])
 
         layout.addLayout(cards_row)
+        
+        self.apply_theme()
 
     def _make_card(self, icon: str, label: str, title_color: str,
                    border_color: str, accent_color: str) -> dict:
@@ -135,17 +116,36 @@ class VisionSection(QWidget):
         # İçerik metni — veri admin panelden gelir, dokunma
         text_lbl = QLabel("")
         text_lbl.setWordWrap(True)
-        text_lbl.setStyleSheet(f"""
-            color: {COLORS['text_secondary']};
-            font-size: 15px;
-            background: transparent;
-            border: none;
-        """)
         col.addWidget(text_lbl)
         col.addStretch()
 
-        return {"widget": frame, "text_label": text_lbl}
+        return {"widget": frame, "text_label": text_lbl, "icon_lbl": icon_lbl, "title_lbl": title_lbl, "divider": divider, "title_color": title_color, "border_color": border_color, "accent_color": accent_color}
 
     def load_data(self, info: PersonalInfo) -> None:
         self._vision_card["text_label"].setText(info.vision_text or "")
         self._mission_card["text_label"].setText(info.mission_text or "")
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#vision_section {{
+                background: {COLORS['bg_primary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        self._label.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 12px; font-weight: 600; letter-spacing: 3px;")
+        self._title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 36px; font-weight: 700;")
+        self._subtitle.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 15px;")
+        
+        for c in [self._vision_card, self._mission_card]:
+            c["widget"].setStyleSheet(f"""
+                QFrame#vision_card {{
+                    background: {COLORS['bg_card']};
+                    border: 1px solid {COLORS['border']};
+                    border-left: 3px solid {COLORS['accent_blue'] if c == self._vision_card else COLORS['success']};
+                    border-radius: 12px;
+                }}
+            """)
+            c["icon_lbl"].setStyleSheet("font-size: 20px; background: transparent; border: none;")
+            c["title_lbl"].setStyleSheet(f"color: {COLORS['accent_blue'] if c == self._vision_card else COLORS['success']}; font-size: 20px; font-weight: 600; background: transparent; border: none;")
+            c["divider"].setStyleSheet(f"background: {COLORS['accent_blue'] if c == self._vision_card else COLORS['success']}; border: none; margin-top: 12px; margin-bottom: 20px;")
+            c["text_label"].setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 15px; background: transparent; border: none;")

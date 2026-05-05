@@ -18,12 +18,9 @@ class SkillsSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#skills_section {{
-                background: {COLORS['bg_primary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
+        self._label = QLabel("// YETENEKLER & BECERİLER")
+        self._title = QLabel("Yeteneklerim")
+        self._subtitle = QLabel("Kullandığım teknolojiler ve yetkinlik seviyelerim")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(64, 80, 64, 80)
@@ -33,29 +30,11 @@ class SkillsSection(QWidget):
         header_col = QVBoxLayout()
         header_col.setSpacing(8)
 
-        label = QLabel("// YETENEKLER & BECERİLER")
-        label.setStyleSheet(f"""
-            color: {COLORS['accent_blue']};
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 3px;
-        """)
-        header_col.addWidget(label)
+        header_col.addWidget(self._label)
 
-        title = QLabel("Yeteneklerim")
-        title.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: 36px;
-            font-weight: 700;
-        """)
-        header_col.addWidget(title)
+        header_col.addWidget(self._title)
 
-        subtitle = QLabel("Kullandığım teknolojiler ve yetkinlik seviyelerim")
-        subtitle.setStyleSheet(f"""
-            color: {COLORS['text_secondary']};
-            font-size: 15px;
-        """)
-        header_col.addWidget(subtitle)
+        header_col.addWidget(self._subtitle)
 
         layout.addLayout(header_col)
 
@@ -70,11 +49,13 @@ class SkillsSection(QWidget):
 
         self._empty_label = QLabel("Henüz yetenek eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
 
+        self.apply_theme()
+
     def load_data(self, skills: list[Skill]) -> None:
+        self._current_skills = skills
         while self._grid.count():
             item = self._grid.takeAt(0)
             if item.widget():
@@ -172,3 +153,18 @@ class SkillsSection(QWidget):
         lay.addLayout(prog_lay)
 
         return card
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#skills_section {{
+                background: {COLORS['bg_primary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        self._label.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 12px; font-weight: 600; letter-spacing: 3px;")
+        self._title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 36px; font-weight: 700;")
+        self._subtitle.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 15px;")
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
+        
+        if hasattr(self, '_current_skills'):
+            self.load_data(self._current_skills)

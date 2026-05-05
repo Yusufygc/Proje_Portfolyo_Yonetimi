@@ -19,12 +19,9 @@ class CertificatesSection(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(f"""
-            QWidget#certificates_section {{
-                background: {COLORS['bg_secondary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
+        self._label = QLabel("// SERTİFİKALAR")
+        self._title = QLabel("Sertifikalarım")
+        self._subtitle = QLabel("Aldığım eğitimler ve başarı sertifikaları")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(64, 80, 64, 80)
@@ -34,29 +31,11 @@ class CertificatesSection(QWidget):
         header_col = QVBoxLayout()
         header_col.setSpacing(8)
 
-        label = QLabel("// SERTİFİKALAR")
-        label.setStyleSheet(f"""
-            color: {COLORS['accent_blue']};
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 3px;
-        """)
-        header_col.addWidget(label)
+        header_col.addWidget(self._label)
 
-        title = QLabel("Sertifikalarım")
-        title.setStyleSheet(f"""
-            color: {COLORS['text_primary']};
-            font-size: 36px;
-            font-weight: 700;
-        """)
-        header_col.addWidget(title)
+        header_col.addWidget(self._title)
 
-        subtitle = QLabel("Aldığım eğitimler ve başarı sertifikaları")
-        subtitle.setStyleSheet(f"""
-            color: {COLORS['text_secondary']};
-            font-size: 15px;
-        """)
-        header_col.addWidget(subtitle)
+        header_col.addWidget(self._subtitle)
 
         layout.addLayout(header_col)
 
@@ -69,11 +48,13 @@ class CertificatesSection(QWidget):
 
         self._empty_label = QLabel("Henüz sertifika eklenmemiş.")
         self._empty_label.setAlignment(Qt.AlignCenter)
-        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
         self._empty_label.setVisible(False)
         layout.addWidget(self._empty_label)
+        
+        self.apply_theme()
 
     def load_data(self, certs: list[Certificate]) -> None:
+        self._current_certs = certs
         while self._grid.count():
             item = self._grid.takeAt(0)
             if item.widget():
@@ -91,3 +72,20 @@ class CertificatesSection(QWidget):
 
         # Son sütundan sonrasını stretch et — kartlar sola yaslanır
         self._grid.setColumnStretch(cols, 1)
+        self._grid.setColumnStretch(cols, 1)
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#certificates_section {{
+                background: {COLORS['bg_secondary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        self._label.setStyleSheet(f"color: {COLORS['accent_blue']}; font-size: 12px; font-weight: 600; letter-spacing: 3px;")
+        self._title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: 36px; font-weight: 700;")
+        self._subtitle.setStyleSheet(f"color: {COLORS['text_secondary']}; font-size: 15px;")
+        self._empty_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: 15px;")
+        
+        # If we have current data, reload to recreate cards with new theme
+        if hasattr(self, '_current_certs'):
+            self.load_data(self._current_certs)

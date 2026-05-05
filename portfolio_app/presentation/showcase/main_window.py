@@ -59,8 +59,8 @@ class ShowcaseWindow(QMainWindow):
         self._admin_panel = AdminPanel(self._container, parent=self)
         self._admin_panel.back_requested.connect(self.switch_to_showcase)
         self._root_stack.addWidget(self._admin_panel)
-
-        self.setStyleSheet(f"QMainWindow {{ background: {COLORS['bg_primary']}; }}")
+        
+        self.apply_theme()
 
     def _build_showcase_page(self) -> QWidget:
         page = QWidget()
@@ -84,7 +84,6 @@ class ShowcaseWindow(QMainWindow):
 
         # Scroll içeriği
         self._content = QWidget()
-        self._content.setStyleSheet(f"background: {COLORS['bg_primary']};")
         content_layout = QVBoxLayout(self._content)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(0)
@@ -118,6 +117,10 @@ class ShowcaseWindow(QMainWindow):
         }
 
         return page
+
+    def apply_theme(self):
+        self.setStyleSheet(f"QMainWindow {{ background: {COLORS['bg_primary']}; }}")
+        self._content.setStyleSheet(f"background: {COLORS['bg_primary']};")
 
     # ── Geçiş ───────────────────────────────────────────────────────────────
 

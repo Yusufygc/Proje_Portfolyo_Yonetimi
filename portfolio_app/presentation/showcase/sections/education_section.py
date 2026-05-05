@@ -12,17 +12,13 @@ class EducationSection(QWidget):
         super().__init__(parent)
         self.setObjectName("education_section")
         self._educations = educations or []
-        self.setStyleSheet(f"""
-            QWidget#education_section {{
-                background: {COLORS['bg_primary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
+
         
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(64, 80, 64, 80)
         self._layout.setSpacing(40)
         self.load_data(self._educations)
+        self.apply_theme()
 
     def load_data(self, educations: list[Education]) -> None:
         self._educations = educations
@@ -122,3 +118,13 @@ class EducationSection(QWidget):
             c_layout.addWidget(desc_lbl)
 
         return card
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#education_section {{
+                background: {COLORS['bg_primary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        if hasattr(self, '_educations'):
+            self.load_data(self._educations)

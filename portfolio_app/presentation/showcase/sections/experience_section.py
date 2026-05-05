@@ -12,17 +12,13 @@ class ExperienceSection(QWidget):
         super().__init__(parent)
         self.setObjectName("experience_section")
         self._experiences = experiences or []
-        self.setStyleSheet(f"""
-            QWidget#experience_section {{
-                background: {COLORS['bg_secondary']};
-                border-top: 1px solid {COLORS['border_light']};
-            }}
-        """)
+
         
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(64, 80, 64, 80)
         self._layout.setSpacing(40)
         self.load_data(self._experiences)
+        self.apply_theme()
 
     def load_data(self, experiences: list[Experience]) -> None:
         self._experiences = experiences
@@ -121,3 +117,13 @@ class ExperienceSection(QWidget):
             c_layout.addWidget(desc_lbl)
 
         return card
+
+    def apply_theme(self):
+        self.setStyleSheet(f"""
+            QWidget#experience_section {{
+                background: {COLORS['bg_secondary']};
+                border-top: 1px solid {COLORS['border_light']};
+            }}
+        """)
+        if hasattr(self, '_experiences'):
+            self.load_data(self._experiences)
