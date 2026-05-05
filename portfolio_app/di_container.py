@@ -11,6 +11,8 @@ from infrastructure.repositories.personal_info_repository import PersonalInfoRep
 from infrastructure.repositories.resource_repository import ResourceRepository
 from infrastructure.repositories.resource_type_repository import ResourceTypeRepository
 from infrastructure.repositories.skill_repository import SkillRepository
+from infrastructure.repositories.education_repository import EducationRepository
+from infrastructure.repositories.experience_repository import ExperienceRepository
 from infrastructure.storage.image_storage import ImageStorage
 
 from services.project_service import ProjectService
@@ -19,6 +21,12 @@ from services.personal_info_service import PersonalInfoService
 from services.resource_service import ResourceService
 from services.resource_type_service import ResourceTypeService
 from services.skill_service import SkillService
+from services.education_service import EducationService
+from services.experience_service import ExperienceService
+from services.export_service import ExportService
+from infrastructure.export.pdf_ats_exporter import PDFATSExporter
+from infrastructure.export.pdf_portfolio_exporter import PDFPortfolioExporter
+from infrastructure.export.docx_ats_exporter import DOCXATSExporter
 
 from controllers.project_controller import ProjectController
 from controllers.certificate_controller import CertificateController
@@ -26,6 +34,9 @@ from controllers.personal_info_controller import PersonalInfoController
 from controllers.resource_controller import ResourceController
 from controllers.resource_type_controller import ResourceTypeController
 from controllers.skill_controller import SkillController
+from controllers.education_controller import EducationController
+from controllers.experience_controller import ExperienceController
+from controllers.export_controller import ExportController
 from controllers.showcase_controller import ShowcaseController
 
 
@@ -45,6 +56,8 @@ class DIContainer:
         self.resource_repo      = ResourceRepository(db)
         self.resource_type_repo = ResourceTypeRepository(db)
         self.skill_repo         = SkillRepository(db)
+        self.education_repo     = EducationRepository(db)
+        self.experience_repo    = ExperienceRepository(db)
 
         # ── Services ─────────────────────────────────────────────────────────
         self.project_service       = ProjectService(self.project_repo, self.task_repo, self.storage)
@@ -53,6 +66,13 @@ class DIContainer:
         self.resource_service      = ResourceService(self.resource_repo)
         self.resource_type_service = ResourceTypeService(self.resource_type_repo)
         self.skill_service         = SkillService(self.skill_repo, self.storage)
+        self.education_service     = EducationService(self.education_repo)
+        self.experience_service    = ExperienceService(self.experience_repo)
+        self.export_service        = ExportService()
+        
+        self.export_service.register_exporter("ats_pdf", PDFATSExporter())
+        self.export_service.register_exporter("portfolio_pdf", PDFPortfolioExporter())
+        self.export_service.register_exporter("ats_docx", DOCXATSExporter())
 
         # ── Controllers ──────────────────────────────────────────────────────
         self.project_controller       = ProjectController(self.project_service)
@@ -61,9 +81,22 @@ class DIContainer:
         self.resource_controller      = ResourceController(self.resource_service)
         self.resource_type_controller = ResourceTypeController(self.resource_type_service)
         self.skill_controller         = SkillController(self.skill_service)
+        self.education_controller     = EducationController(self.education_service)
+        self.experience_controller    = ExperienceController(self.experience_service)
+        self.export_controller        = ExportController(
+            self.export_service,
+            self.personal_info_service,
+            self.project_service,
+            self.skill_service,
+            self.education_service,
+            self.experience_service,
+            self.certificate_service
+        )
         self.showcase_controller      = ShowcaseController(
             self.personal_info_service,
             self.project_service,
             self.certificate_service,
             self.skill_service,
+            self.education_service,
+            self.experience_service
         )
