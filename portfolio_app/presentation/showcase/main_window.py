@@ -12,6 +12,8 @@ from presentation.showcase.sections.projects_section import ProjectsSection
 from presentation.showcase.sections.skills_section import SkillsSection
 from presentation.showcase.sections.vision_section import VisionSection
 from presentation.showcase.sections.certificates_section import CertificatesSection
+from presentation.showcase.sections.experience_section import ExperienceSection
+from presentation.showcase.sections.education_section import EducationSection
 from presentation.admin.admin_window import AdminPanel
 from styles.constants import COLORS
 from config import WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, APP_NAME
@@ -90,12 +92,16 @@ class ShowcaseWindow(QMainWindow):
         self._about_section    = AboutSection()
         self._skills_section   = SkillsSection()
         self._projects_section = ProjectsSection()
+        self._exp_section      = ExperienceSection([])
+        self._edu_section      = EducationSection([])
         self._vision_section   = VisionSection()
         self._certs_section    = CertificatesSection()
 
         content_layout.addWidget(self._about_section)
         content_layout.addWidget(self._skills_section)
         content_layout.addWidget(self._projects_section)
+        content_layout.addWidget(self._exp_section)
+        content_layout.addWidget(self._edu_section)
         content_layout.addWidget(self._vision_section)
         content_layout.addWidget(self._certs_section)
 
@@ -105,6 +111,8 @@ class ShowcaseWindow(QMainWindow):
             "about":        self._about_section,
             "skills":       self._skills_section,
             "projects":     self._projects_section,
+            "experience":   self._exp_section,
+            "education":    self._edu_section,
             "vision":       self._vision_section,
             "certificates": self._certs_section,
         }
@@ -130,10 +138,14 @@ class ShowcaseWindow(QMainWindow):
         skills   = self._controller.get_skills()
         projects = self._controller.get_all_projects()
         certs    = self._controller.get_certificates()
+        edu      = self._controller.get_education()
+        exp      = self._controller.get_experience()
 
         self._about_section.load_data(info)
         self._skills_section.load_data(skills)
         self._projects_section.load_data(projects)
+        self._exp_section.load_data(exp)
+        self._edu_section.load_data(edu)
         self._vision_section.load_data(info)
         self._certs_section.load_data(certs)
 

@@ -19,6 +19,8 @@ class ShowcaseNavbar(QWidget):
         ("about",        "Hakkımda"),
         ("skills",       "Yeteneklerim"),
         ("projects",     "Projelerim"),
+        ("experience",   "Deneyim"),
+        ("education",    "Eğitim"),
         ("vision",       "Vizyon & Misyon"),
         ("certificates", "Sertifikalarım"),
     ]
