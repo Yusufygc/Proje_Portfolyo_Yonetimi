@@ -27,7 +27,10 @@ class AdminSidebar(QWidget):
         ("skills",        "Beceriler",       Icons.TASK),
         ("personal_info", "Kişisel Bilgi",   Icons.PERSON),
         ("certificates",  "Sertifikalar",    Icons.CERTIFICATE),
+        ("education",     "Eğitim",          Icons.EDUCATION),
+        ("experience",    "Deneyim",         Icons.EXPERIENCE),
         ("resources",     "Kaynaklar",       Icons.RESOURCES),
+        ("export",        "CV / Export",     Icons.EXPORT),
         ("settings",      "Ayarlar",         Icons.SETTINGS),
     ]
 

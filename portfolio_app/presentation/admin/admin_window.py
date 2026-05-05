@@ -10,6 +10,9 @@ from presentation.admin.pages.personal_info_page import PersonalInfoPage
 from presentation.admin.pages.certificates_page import CertificatesPage
 from presentation.admin.pages.resources_page import ResourcesPage
 from presentation.admin.pages.skills_page import SkillsPage
+from presentation.admin.pages.education_page import EducationPage
+from presentation.admin.pages.experience_page import ExperiencePage
+from presentation.admin.pages.export_page import ExportPage
 from presentation.admin.pages.settings_page import SettingsPage
 from styles.constants import COLORS
 from di_container import DIContainer
@@ -48,8 +51,11 @@ class AdminPanel(QWidget):
             "projects":      ProjectsPage(c.project_controller),
             "personal_info": PersonalInfoPage(c.personal_info_controller),
             "certificates":  CertificatesPage(c.certificate_controller),
+            "education":     EducationPage(c.education_controller),
+            "experience":    ExperiencePage(c.experience_controller),
             "resources":     ResourcesPage(c.resource_controller, c.resource_type_controller, c.project_controller),
             "skills":        SkillsPage(c.skill_controller),
+            "export":        ExportPage(c.export_controller),
             "settings":      SettingsPage(),
         }
         for page in self._pages.values():
