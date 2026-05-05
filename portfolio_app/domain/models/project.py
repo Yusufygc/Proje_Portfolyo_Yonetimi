@@ -35,6 +35,7 @@ class Project:
     end_date: Optional[str] = None
     is_featured: bool = False
     display_order: int = 0
+    role_in_project: str = ""
     created_at: str = ""
     tags: list[ProjectTag] = field(default_factory=list)
     images: list[ProjectImage] = field(default_factory=list)

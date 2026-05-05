@@ -15,6 +15,7 @@ class PersonalInfo:
     linkedin_url: Optional[str] = None
     website_url: Optional[str] = None
     email: Optional[str] = None
+    phone: Optional[str] = None
     vision_text: str = ""
     mission_text: str = ""
     hobbies: str = ""
