@@ -1,6 +1,11 @@
 """styles/theme_manager.py — Uygulama tema yöneticisi."""
 
 from typing import Dict, Any
+from PySide6.QtCore import QObject, Signal, QCoreApplication
+from PySide6.QtWidgets import QApplication, QWidget
+
+class ThemeSignals(QObject):
+    theme_changed = Signal(str)
 
 class Theme:
     def __init__(self, name: str, colors: Dict[str, str]):
@@ -17,6 +22,7 @@ DARK_COLORS = {
     "bg_hover":      "#1C2128",
     "bg_active":     "#21262D",
     "bg_sidebar":    "#010409",
+    "bg_navbar":     "#010409",
 
     "accent_blue":   "#2F81F7",
     "accent_blue_dark": "#388BFD",
@@ -60,7 +66,8 @@ LIGHT_COLORS = {
     "bg_input":      "#F6F8FA",
     "bg_hover":      "#F3F4F6",
     "bg_active":     "#E5E7EB",
-    "bg_sidebar":    "#E5E7EB",
+    "bg_sidebar":    "#FFFFFF",
+    "bg_navbar":     "#FFFFFF",
 
     "accent_blue":   "#0969DA",
     "accent_blue_dark": "#0349B4",
@@ -102,6 +109,7 @@ class ThemeManager:
         "light": Theme("light", LIGHT_COLORS)
     }
     _current_theme_name: str = "dark"
+    signals = ThemeSignals()
 
     @classmethod
     def register_theme(cls, theme: Theme):
@@ -126,10 +134,41 @@ class ThemeManager:
             raise ValueError(f"Bilinmeyen tema: {name}")
 
     @classmethod
+    def toggle_theme(cls):
+        """Temayı değiştirir ve restart atmadan arayüzü anlık günceller."""
+        from resources.icon_manager import IconManager
+        
+        current = cls._current_theme_name
+        new_theme = "light" if current == "dark" else "dark"
+        cls.set_theme(new_theme)
+        
+        # İkon cache temizle (yeni metin renklerine göre üretilecek)
+        IconManager.clear_cache()
+        
+        # Sinyali fırlat (custom event için dinleyenler olabilir)
+        cls.signals.theme_changed.emit(new_theme)
+        
+        # Global ağaç taraması ile apply_theme çağrısı
+        app = QApplication.instance()
+        if app:
+            for top_widget in app.topLevelWidgets():
+                cls._refresh_widget_tree(top_widget)
+
+    @classmethod
+    def _refresh_widget_tree(cls, widget: QWidget):
+        """Recursive widget tree taraması yaparak apply_theme metodu olanları tetikler."""
+        if hasattr(widget, "apply_theme") and callable(widget.apply_theme):
+            widget.apply_theme()
+            
+        for child in widget.findChildren(QWidget):
+            if hasattr(child, "apply_theme") and callable(child.apply_theme):
+                child.apply_theme()
+
+    @classmethod
     def toggle_theme_and_restart(cls):
-        """Temayı değiştirir ve uygulamayı yeniden başlatır."""
+        """(Eski metod) Temayı değiştirir ve uygulamayı yeniden başlatır."""
         import sys
-        from PySide6.QtCore import QProcess, QCoreApplication
+        from PySide6.QtCore import QProcess
         
         current = cls._current_theme_name
         new_theme = "light" if current == "dark" else "dark"
