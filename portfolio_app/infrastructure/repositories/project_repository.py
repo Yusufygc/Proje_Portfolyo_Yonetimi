@@ -52,12 +52,13 @@ class ProjectRepository:
                 """INSERT INTO projects
                    (title, short_description, full_description, status,
                     github_url, demo_url, start_date, end_date,
-                    is_featured, display_order)
-                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                    is_featured, display_order, role_in_project)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
                 (project.title, project.short_description, project.full_description,
                  project.status.value, project.github_url, project.demo_url,
                  project.start_date, project.end_date,
-                 int(project.is_featured), project.display_order),
+                 int(project.is_featured), project.display_order,
+                 project.role_in_project),
             )
             project.id = cursor.lastrowid
             self._save_tags(project.id, project.tags)
@@ -75,12 +76,13 @@ class ProjectRepository:
                 """UPDATE projects SET
                    title=?, short_description=?, full_description=?, status=?,
                    github_url=?, demo_url=?, start_date=?, end_date=?,
-                   is_featured=?, display_order=?
+                   is_featured=?, display_order=?, role_in_project=?
                    WHERE id=?""",
                 (project.title, project.short_description, project.full_description,
                  project.status.value, project.github_url, project.demo_url,
                  project.start_date, project.end_date,
-                 int(project.is_featured), project.display_order, project.id),
+                 int(project.is_featured), project.display_order,
+                 project.role_in_project, project.id),
             )
             self._db.execute("DELETE FROM project_tags WHERE project_id=?", (project.id,))
             self._save_tags(project.id, project.tags)
@@ -158,5 +160,6 @@ class ProjectRepository:
             end_date=row["end_date"],
             is_featured=bool(row["is_featured"]),
             display_order=row["display_order"],
+            role_in_project=row["role_in_project"] or "",
             created_at=row["created_at"],
         )
